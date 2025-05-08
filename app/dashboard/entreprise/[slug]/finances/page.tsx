@@ -1,0 +1,321 @@
+"use client";
+"use client";
+
+import React from 'react';
+import { useParams } from 'next/navigation';
+import { Euro, TrendingUp, TrendingDown, Filter, Download, Printer } from 'lucide-react';
+import StatCard from '@/components/dashboard/StatCard';
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
+
+// Données fictives pour les finances
+const transactionsData = [
+  { 
+    id: 1, 
+    date: "02/05/2025", 
+    description: "Paiement client XYZ", 
+    montant: 2500, 
+    type: "Revenu", 
+    categorie: "Vente de services",
+    statut: "Complété"
+  },
+  { 
+    id: 2, 
+    date: "30/04/2025", 
+    description: "Achat matériel informatique", 
+    montant: -1200, 
+    type: "Dépense", 
+    categorie: "Équipement",
+    statut: "Complété"
+  },
+  { 
+    id: 3, 
+    date: "28/04/2025", 
+    description: "Paiement client ABC", 
+    montant: 1800, 
+    type: "Revenu", 
+    categorie: "Vente de services",
+    statut: "Complété"
+  },
+  { 
+    id: 4, 
+    date: "25/04/2025", 
+    description: "Salaires employés", 
+    montant: -8500, 
+    type: "Dépense", 
+    categorie: "Salaires",
+    statut: "Complété"
+  },
+  { 
+    id: 5, 
+    date: "20/04/2025", 
+    description: "Loyer bureau", 
+    montant: -2000, 
+    type: "Dépense", 
+    categorie: "Loyer",
+    statut: "Complété"
+  },
+  { 
+    id: 6, 
+    date: "15/04/2025", 
+    description: "Paiement client DEF", 
+    montant: 3200, 
+    type: "Revenu", 
+    categorie: "Vente de services",
+    statut: "Complété"
+  },
+  { 
+    id: 7, 
+    date: "10/04/2025", 
+    description: "Facture électricité", 
+    montant: -350, 
+    type: "Dépense", 
+    categorie: "Charges",
+    statut: "Complété"
+  },
+  { 
+    id: 8, 
+    date: "05/04/2025", 
+    description: "Paiement client GHI", 
+    montant: 1500, 
+    type: "Revenu", 
+    categorie: "Vente de services",
+    statut: "Complété"
+  }
+];
+
+// Statistiques financières
+const stats = [
+  { label: "Revenus (mois)", value: "9 000 €", icon: <TrendingUp />, accent: "bg-green-600" },
+  { label: "Dépenses (mois)", value: "12 050 €", icon: <TrendingDown />, accent: "bg-red-600" },
+  { label: "Balance", value: "-3 050 €", icon: <Euro />, accent: "bg-amber-600" },
+  { label: "Prévisions", value: "+15%", icon: <TrendingUp />, accent: "bg-blue-600" },
+];
+
+// Données pour le graphique d'évolution
+const evolutionData = [
+  { mois: 'Jan', revenus: 8000, depenses: 6000 },
+  { mois: 'Fév', revenus: 7500, depenses: 7000 },
+  { mois: 'Mar', revenus: 9500, depenses: 8000 },
+  { mois: 'Avr', revenus: 9000, depenses: 12050 },
+  { mois: 'Mai', revenus: 11000, depenses: 9000 },
+  { mois: 'Juin', revenus: 12500, depenses: 10000 },
+];
+
+// Données pour le graphique de répartition des dépenses
+const depensesData = [
+  { name: 'Salaires', value: 8500, color: '#3b82f6' },
+  { name: 'Loyer', value: 2000, color: '#10b981' },
+  { name: 'Équipement', value: 1200, color: '#f59e0b' },
+  { name: 'Charges', value: 350, color: '#ef4444' },
+];
+
+// Formatter pour les montants en euros
+const euroFormatter = (value: number) => `${value.toLocaleString()} €`;
+
+export default function FinancesPage() {
+  // Utiliser useParams pour récupérer le slug de l'URL
+  const params = useParams();
+  const slug = params.slug as string;
+  return (
+    <div className="flex flex-col gap-6 py-4">
+      <h1 className="text-2xl font-bold text-[var(--zalama-text)]">Finances</h1>
+      <p className="text-[var(--zalama-text)]/70 mb-4">Entreprise: {slug}</p>
+      
+      {/* Statistiques */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat) => (
+          <StatCard key={stat.label} {...stat} />
+        ))}
+      </div>
+      
+      {/* Graphiques */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2">
+        {/* Évolution revenus/dépenses */}
+        <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-6">
+          <h2 className="text-lg font-semibold text-[var(--zalama-text)] mb-4">Évolution revenus/dépenses</h2>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={evolutionData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--zalama-border)" />
+                <XAxis dataKey="mois" stroke="var(--zalama-text)" />
+                <YAxis stroke="var(--zalama-text)" tickFormatter={euroFormatter} />
+                <Tooltip 
+                  formatter={(value) => [`${value} €`, '']}
+                  contentStyle={{ 
+                    backgroundColor: 'var(--zalama-card)', 
+                    borderColor: 'var(--zalama-border)' 
+                  }}
+                  labelStyle={{ color: 'var(--zalama-text)' }}
+                />
+                <Legend />
+                <Line type="monotone" dataKey="revenus" stroke="#10b981" strokeWidth={2} activeDot={{ r: 8 }} name="Revenus" />
+                <Line type="monotone" dataKey="depenses" stroke="#ef4444" strokeWidth={2} name="Dépenses" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        
+        {/* Répartition des dépenses */}
+        <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-6">
+          <h2 className="text-lg font-semibold text-[var(--zalama-text)] mb-4">Répartition des dépenses</h2>
+          <div className="h-80 flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={depensesData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={120}
+                  fill="#8884d8"
+                  dataKey="value"
+                  nameKey="name"
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                >
+                  {depensesData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value) => [`${value} €`, '']}
+                  contentStyle={{ 
+                    backgroundColor: 'var(--zalama-card)', 
+                    borderColor: 'var(--zalama-border)' 
+                  }}
+                  labelStyle={{ color: 'var(--zalama-text)' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+      
+      {/* Barre d&apos;actions */}
+      <div className="flex flex-col sm:flex-row justify-between gap-4 mt-2">
+        <div className="flex gap-2">
+          <div className="relative">
+            <input 
+              type="month" 
+              defaultValue="2025-05"
+              className="pl-4 pr-4 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)] text-[var(--zalama-text)] w-full sm:w-48"
+            />
+          </div>
+          <button className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]">
+            <Filter className="h-4 w-4" />
+            <span>Filtres</span>
+          </button>
+        </div>
+        <div className="flex gap-2">
+          <button className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]">
+            <Download className="h-4 w-4" />
+            <span>Exporter</span>
+          </button>
+          <button className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]">
+            <Printer className="h-4 w-4" />
+            <span>Imprimer</span>
+          </button>
+        </div>
+      </div>
+      
+      {/* Tableau des transactions */}
+      <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] overflow-hidden mt-2">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]">
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--zalama-text)]/70 uppercase tracking-wider">Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--zalama-text)]/70 uppercase tracking-wider">Description</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--zalama-text)]/70 uppercase tracking-wider">Catégorie</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--zalama-text)]/70 uppercase tracking-wider">Type</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-[var(--zalama-text)]/70 uppercase tracking-wider">Montant</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[var(--zalama-text)]/70 uppercase tracking-wider">Statut</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--zalama-border)]">
+              {transactionsData.map((transaction) => (
+                <tr key={transaction.id} className="hover:bg-[var(--zalama-bg-light)]/50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-[var(--zalama-text)]">{transaction.date}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-[var(--zalama-text)]">{transaction.description}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-[var(--zalama-text)]">{transaction.categorie}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      {transaction.type === 'Revenu' ? (
+                        <TrendingUp className="h-4 w-4 text-green-500 mr-2" />
+                      ) : (
+                        <TrendingDown className="h-4 w-4 text-red-500 mr-2" />
+                      )}
+                      <span className="text-sm text-[var(--zalama-text)]">{transaction.type}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <div className={`text-sm font-medium ${
+                      transaction.montant > 0 ? 'text-green-500' : 'text-red-500'
+                    }`}>
+                      {transaction.montant > 0 ? '+' : ''}{transaction.montant} €
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      transaction.statut === 'Complété' 
+                        ? 'bg-green-100 text-green-800' 
+                        : transaction.statut === 'En attente' 
+                          ? 'bg-yellow-100 text-yellow-800' 
+                          : 'bg-red-100 text-red-800'
+                    }`}>
+                      {transaction.statut}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        {/* Pagination */}
+        <div className="px-6 py-3 flex items-center justify-between border-t border-[var(--zalama-border)]">
+          <div className="text-sm text-[var(--zalama-text)]/70">
+            Affichage de 1 à 8 sur 24 transactions
+          </div>
+          <div className="flex gap-1">
+            <button className="px-3 py-1 rounded border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]">
+              Précédent
+            </button>
+            <button className="px-3 py-1 rounded border border-[var(--zalama-border)] bg-[var(--zalama-blue)] text-white">
+              1
+            </button>
+            <button className="px-3 py-1 rounded border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]">
+              2
+            </button>
+            <button className="px-3 py-1 rounded border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]">
+              3
+            </button>
+            <button className="px-3 py-1 rounded border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]">
+              Suivant
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
