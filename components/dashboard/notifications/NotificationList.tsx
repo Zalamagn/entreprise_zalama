@@ -47,7 +47,7 @@ export default function NotificationList({ notifications, onMarkAsRead }: Notifi
   return (
     <div className="flex-1 overflow-y-auto p-1" style={{scrollbarWidth: 'none'}}>
       {notifications.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-full text-[var(--zalama-text)]/60">
+        <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-400">
           <Info className="w-12 h-12 mb-2" />
           <p className="text-lg font-medium">Aucune notification</p>
           <p className="text-sm">Vous n&apos;avez aucune notification pour le moment</p>
@@ -59,8 +59,8 @@ export default function NotificationList({ notifications, onMarkAsRead }: Notifi
               key={notification.id} 
               className={`p-3 rounded-lg transition-colors ${
                 notification.read 
-                  ? 'bg-transparent hover:bg-[var(--zalama-bg-light)]' 
-                  : 'bg-[var(--zalama-blue)]/5 hover:bg-[var(--zalama-blue)]/10'
+                  ? 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700' 
+                  : 'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30'
               }`}
             >
               <div className="flex gap-3">
@@ -69,17 +69,17 @@ export default function NotificationList({ notifications, onMarkAsRead }: Notifi
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className={`text-sm font-medium ${notification.read ? 'text-[var(--zalama-text)]' : 'text-[var(--zalama-blue)]'}`}>
+                    <h3 className={`text-sm font-medium ${notification.read ? 'text-gray-900 dark:text-white' : 'text-blue-600 dark:text-blue-400'}`}>
                       {notification.title}
                     </h3>
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      <span className="text-xs text-[var(--zalama-text)]/60 whitespace-nowrap">
+                      <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
                         {formatDate(notification.timestamp)}
                       </span>
                       {!notification.read && (
                         <button
                           onClick={() => onMarkAsRead(notification.id)}
-                          className="p-1 rounded-full hover:bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]/60 hover:text-[var(--zalama-text)]"
+                          className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                           aria-label="Marquer comme lu"
                         >
                           <Check className="w-4 h-4" />
@@ -87,7 +87,7 @@ export default function NotificationList({ notifications, onMarkAsRead }: Notifi
                       )}
                     </div>
                   </div>
-                  <p className="text-sm text-[var(--zalama-text)]/80 mt-1">
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
                     {notification.message}
                   </p>
                   {notification.link && (

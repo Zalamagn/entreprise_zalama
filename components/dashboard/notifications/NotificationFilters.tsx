@@ -16,7 +16,7 @@ export default function NotificationFilters({ currentFilter, onFilterChange }: N
   ];
 
   return (
-    <div className="p-2 border-b border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50">
+    <div className="p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
       <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-hide" style={{scrollbarWidth: 'none'}}>
         {filters.map((filter) => {
           const isActive = currentFilter === filter.id;
@@ -28,8 +28,8 @@ export default function NotificationFilters({ currentFilter, onFilterChange }: N
               onClick={() => onFilterChange(filter.id)}
               className={`flex items-center px-3 py-1.5 rounded-full text-sm whitespace-nowrap transition-colors ${
                 isActive 
-                  ? 'bg-[var(--zalama-blue)]/10 text-[var(--zalama-blue)]' 
-                  : 'text-[var(--zalama-text)]/70 hover:bg-[var(--zalama-bg-light)] hover:text-[var(--zalama-text)]'
+                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               <Icon className={`w-4 h-4 mr-1.5 ${filter.color || ''}`} />
