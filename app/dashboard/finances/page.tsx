@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Euro, TrendingUp, TrendingDown, Filter, Download, Printer } from 'lucide-react';
+import { Euro, TrendingUp, TrendingDown, Filter, Download, Printer, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import StatCard from '@/components/dashboard/StatCard';
 import { 
@@ -19,7 +19,23 @@ import {
   Cell
 } from 'recharts';
 
-// Données fictives pour les finances
+// Types pour les statistiques
+interface StatItem {
+  label: string;
+  value: number | string;
+  icon: React.ReactNode;
+  accent: string;
+}
+
+// Les statistiques seront générées dynamiquement en fonction de l'entreprise connectée
+const getStats = (company: any): StatItem[] => [
+  { label: "Montant total", value: `${company?.stats?.montantTotal?.toLocaleString() || 0} €`, icon: <Euro />, accent: "bg-blue-600" },
+  { label: "Demandes en cours", value: company?.stats?.demandesEnCours || 0, icon: <TrendingUp />, accent: "bg-green-600" },
+  { label: "Demandes ce mois", value: company?.stats?.demandesMois || 0, icon: <TrendingDown />, accent: "bg-red-600" },
+  { label: "Employés actifs", value: company?.stats?.totalEmployes || 0, icon: <Users />, accent: "bg-amber-600" },
+];
+
+// Données fictives pour les finances (utilisées si les données de l'entreprise ne sont pas disponibles)
 const transactionsData = [
   { 
     id: 1, 
@@ -147,6 +163,13 @@ export default function FinancesPage() {
     );
   }
   
+  // Générer les statistiques pour l'entreprise connectée
+  const stats = getStats(currentCompany);
+  
+  // Utiliser les données de l'entreprise pour les graphiques si disponibles
+  const avancesData = currentCompany?.financeData?.avances || evolutionData;
+  const repartitionData = currentCompany?.financeData?.repartition || depensesData;
+  
   return (
     <div className="flex flex-col gap-6 py-4">
       <h1 className="text-2xl font-bold text-[var(--zalama-text)]">Finances</h1>
@@ -167,7 +190,7 @@ export default function FinancesPage() {
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
-                data={evolutionData}
+                data={avancesData}
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--zalama-border)" />
@@ -182,8 +205,7 @@ export default function FinancesPage() {
                   labelStyle={{ color: 'var(--zalama-text)' }}
                 />
                 <Legend />
-                <Line type="monotone" dataKey="revenus" stroke="#10b981" strokeWidth={2} activeDot={{ r: 8 }} name="Revenus" />
-                <Line type="monotone" dataKey="depenses" stroke="#ef4444" strokeWidth={2} name="Dépenses" />
+                <Line type="monotone" dataKey="montant" stroke="#10b981" strokeWidth={2} activeDot={{ r: 8 }} name="Montant des avances" />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -196,18 +218,18 @@ export default function FinancesPage() {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={depensesData}
+                  data={repartitionData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  outerRadius={120}
+                  outerRadius={80}
                   fill="#8884d8"
-                  dataKey="value"
-                  nameKey="name"
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  dataKey="montant"  
+                  nameKey="categorie"
+                  label={({ categorie, percent }) => `${categorie} ${(percent * 100).toFixed(0)}%`}
                 >
-                  {depensesData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  {repartitionData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={`hsl(${index * 45}, 70%, 50%)`} />
                   ))}
                 </Pie>
                 <Tooltip 
@@ -218,6 +240,7 @@ export default function FinancesPage() {
                   }}
                   labelStyle={{ color: 'var(--zalama-text)' }}
                 />
+                <Legend />
               </PieChart>
             </ResponsiveContainer>
           </div>

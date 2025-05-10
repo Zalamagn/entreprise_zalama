@@ -22,12 +22,20 @@ import {
   Area
 } from 'recharts';
 
-// Statistiques générales
-const stats = [
-  { label: "Utilisateurs actifs", value: 1248, icon: <Users />, accent: "bg-blue-600" },
-  { label: "Taux de conversion", value: "8.5%", icon: <TrendingUp />, accent: "bg-green-600" },
-  { label: "Taux de satisfaction", value: "92%", icon: <Activity />, accent: "bg-purple-600" },
-  { label: "Croissance mensuelle", value: "+12%", icon: <BarChart2 />, accent: "bg-amber-600" },
+// Types pour les statistiques
+interface StatItem {
+  label: string;
+  value: number | string;
+  icon: React.ReactNode;
+  accent: string;
+}
+
+// Les statistiques seront générées dynamiquement en fonction de l'entreprise connectée
+const getStats = (company: any): StatItem[] => [
+  { label: "Employés actifs", value: company?.stats?.totalEmployes || 0, icon: <Users />, accent: "bg-blue-600" },
+  { label: "Demandes en cours", value: company?.stats?.demandesEnCours || 0, icon: <TrendingUp />, accent: "bg-green-600" },
+  { label: "Demandes ce mois", value: company?.stats?.demandesMois || 0, icon: <Activity />, accent: "bg-purple-600" },
+  { label: "Montant total", value: `${company?.stats?.montantTotal?.toLocaleString() || 0} €`, icon: <BarChart2 />, accent: "bg-amber-600" },
 ];
 
 // Données pour le graphique d'évolution des utilisateurs
@@ -90,6 +98,13 @@ export default function StatistiquesPage() {
     );
   }
   
+  // Générer les statistiques pour l'entreprise connectée
+  const stats = getStats(currentCompany);
+  
+  // Utiliser les données de l'entreprise pour les graphiques si disponibles
+  const employeeEvolutionData = currentCompany?.employeeData?.evolution || usersData;
+  const employeeDepartmentsData = currentCompany?.employeeData?.departements || rolesData;
+  
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold text-[var(--zalama-text)]">Statistiques</h1>
@@ -135,8 +150,8 @@ export default function StatistiquesPage() {
           <h2 className="text-lg font-semibold text-[var(--zalama-text)] mb-4">Évolution des utilisateurs</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={usersData}
+              <LineChart
+                data={employeeEvolutionData}
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--zalama-border)" />
@@ -150,10 +165,8 @@ export default function StatistiquesPage() {
                   labelStyle={{ color: 'var(--zalama-text)' }}
                 />
                 <Legend />
-                <Area type="monotone" dataKey="actifs" stackId="1" stroke="#3b82f6" fill="#3b82f6" name="Utilisateurs actifs" />
-                <Area type="monotone" dataKey="nouveaux" stackId="1" stroke="#10b981" fill="#10b981" name="Nouveaux utilisateurs" />
-                <Area type="monotone" dataKey="inactifs" stackId="1" stroke="#ef4444" fill="#ef4444" name="Utilisateurs inactifs" />
-              </AreaChart>
+                <Line type="monotone" dataKey="nombre" stroke="#3b82f6" strokeWidth={2} activeDot={{ r: 8 }} name="Nombre d'employés" />
+              </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
@@ -165,27 +178,29 @@ export default function StatistiquesPage() {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={rolesData}
+                  data={employeeDepartmentsData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  outerRadius={120}
+                  outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
                   nameKey="name"
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                 >
-                  {rolesData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  {employeeDepartmentsData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={`hsl(${index * 45}, 70%, 50%)`} />
                   ))}
                 </Pie>
                 <Tooltip 
+                  formatter={(value, name) => [`${value}`, name]}
                   contentStyle={{ 
                     backgroundColor: 'var(--zalama-card)', 
                     borderColor: 'var(--zalama-border)' 
                   }}
                   labelStyle={{ color: 'var(--zalama-text)' }}
                 />
+                <Legend />
               </PieChart>
             </ResponsiveContainer>
           </div>

@@ -13,9 +13,7 @@ export interface Company {
     montantTotal: number;
   };
   employeeData: {
-    departements: {
-      [x: string]: string; name: string; value: number 
-}[];
+    departements: { name: string; value: number }[];
     statuts: { name: string; value: number }[];
     evolution: { mois: string; nombre: number }[];
   };
