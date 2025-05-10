@@ -80,14 +80,23 @@ export default function StatistiquesPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   
+  // Créer la référence en dehors des hooks
+  const hasFinishedLoading = React.useRef(false);
+  
   // Rediriger vers la page de login si l'utilisateur n'est pas authentifié
   useEffect(() => {
-    if (!isAuthenticated || !currentCompany) {
+    if (!isAuthenticated) {
       router.push('/login');
-    } else {
+    }
+  }, [isAuthenticated, router]);
+  
+  // Mettre fin au chargement quand l'entreprise est chargée
+  useEffect(() => {
+    if (currentCompany && !hasFinishedLoading.current) {
+      hasFinishedLoading.current = true;
       setLoading(false);
     }
-  }, [isAuthenticated, currentCompany, router]);
+  }, [currentCompany]);
   // Afficher un indicateur de chargement pendant la vérification de l'authentification
   if (loading) {
     return (

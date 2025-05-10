@@ -163,16 +163,25 @@ export default function EntrepriseDashboardPage() {
   const { isAuthenticated, currentCompany, currentAdmin } = useAuth();
   const router = useRouter();
   
+  // Créer la référence en dehors des hooks
+  const hasShownWelcome = React.useRef(false);
+
   // Rediriger vers la page de login si l'utilisateur n'est pas authentifié
   useEffect(() => {
-    if (!isAuthenticated || !currentCompany) {
+    if (!isAuthenticated) {
       router.push('/login');
-    } else {
+    }
+  }, [isAuthenticated, router]);
+  
+  // Afficher un message de bienvenue une seule fois quand l'entreprise est chargée
+  useEffect(() => {
+    if (currentCompany && isAuthenticated && !hasShownWelcome.current) {
+      hasShownWelcome.current = true;
       toast.success(`Bienvenue sur le tableau de bord de ${currentCompany.name}`, {
         id: 'dashboard-welcome'
       });
     }
-  }, [isAuthenticated, currentCompany, router]);
+  }, [currentCompany, isAuthenticated]);
   
   // Si l'entreprise n'est pas encore chargée, afficher un état de chargement
   if (!currentCompany) {
