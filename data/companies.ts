@@ -11,6 +11,8 @@ export interface Company {
     demandesEnCours: number;
     demandesMois: number;
     montantTotal: number;
+    limiteRemboursement: number;
+    joursAvantRemboursement: number;
   };
   employeeData: {
     departements: { name: string; value: number }[];
@@ -50,10 +52,12 @@ export const companies: Company[] = [
     employeesCount: 120,
     createdAt: new Date('2020-01-15'),
     stats: {
-      totalEmployes: 120,
-      demandesEnCours: 8,
-      demandesMois: 32,
-      montantTotal: 15600
+      totalEmployes: 248,
+      demandesEnCours: 12,
+      demandesMois: 35,
+      montantTotal: 15000,
+      limiteRemboursement: 25000,
+      joursAvantRemboursement: 7
     },
     employeeData: {
       departements: [
@@ -123,7 +127,9 @@ export const companies: Company[] = [
       totalEmployes: 85,
       demandesEnCours: 5,
       demandesMois: 18,
-      montantTotal: 8900
+      montantTotal: 8900,
+      limiteRemboursement: 15000,
+      joursAvantRemboursement: 15
     },
     employeeData: {
       departements: [
@@ -191,7 +197,9 @@ export const companies: Company[] = [
       totalEmployes: 250,
       demandesEnCours: 15,
       demandesMois: 45,
-      montantTotal: 28500
+      montantTotal: 28500,
+      limiteRemboursement: 35000,
+      joursAvantRemboursement: 5
     },
     employeeData: {
       departements: [
