@@ -1,7 +1,8 @@
 "use client";
-import React from 'react';
-import { useParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { BarChart2, TrendingUp, Users, Activity, Download, Calendar, Filter } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import StatCard from '@/components/dashboard/StatCard';
 import { 
   LineChart, 
@@ -67,13 +68,32 @@ const satisfactionData = [
 ];
 
 export default function StatistiquesPage() {
-  // Utiliser useParams pour récupérer le slug de l'URL
-  const params = useParams();
-  const slug = params.slug as string;
+  const { isAuthenticated, currentCompany } = useAuth();
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  
+  // Rediriger vers la page de login si l'utilisateur n'est pas authentifié
+  useEffect(() => {
+    if (!isAuthenticated || !currentCompany) {
+      router.push('/login');
+    } else {
+      setLoading(false);
+    }
+  }, [isAuthenticated, currentCompany, router]);
+  // Afficher un indicateur de chargement pendant la vérification de l'authentification
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+        <p className="text-gray-600 dark:text-gray-400">Chargement des statistiques...</p>
+      </div>
+    );
+  }
+  
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold text-[var(--zalama-text)]">Statistiques</h1>
-      <p className="text-[var(--zalama-text)]/70">Entreprise: {slug}</p>
+      <p className="text-[var(--zalama-text)]/70">Entreprise: {currentCompany?.name}</p>
       
       {/* Statistiques */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
