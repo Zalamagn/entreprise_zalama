@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
-import { useParams } from 'next/navigation';
-import { Users, UserPlus, UserMinus, Search, Filter, Mail, Phone, Edit, Trash2, Upload, Download, X, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Users, Search, Filter, Mail, Phone, Eye, Download, ChevronDown, Building2, Calendar, Clock } from 'lucide-react';
 import StatCard from '@/components/dashboard/StatCard';
+import { useAuth } from '@/contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 // Données fictives pour les employés
 const employeesData = [
@@ -50,59 +52,35 @@ const employeesData = [
     departement: "Technique", 
     dateEmbauche: "22/09/2022",
     statut: "Actif"
-  },
-  { 
-    id: 5, 
-    nom: "Moreau", 
-    prenom: "Lucas", 
-    email: "lucas.moreau@example.com", 
-    telephone: "06 56 78 90 12", 
-    poste: "Commercial", 
-    departement: "Ventes", 
-    dateEmbauche: "18/04/2021",
-    statut: "Congé"
-  },
-  { 
-    id: 6, 
-    nom: "Dubois", 
-    prenom: "Chloé", 
-    email: "chloe.dubois@example.com", 
-    telephone: "06 67 89 01 23", 
-    poste: "Responsable RH", 
-    departement: "Ressources Humaines", 
-    dateEmbauche: "03/11/2019",
-    statut: "Actif"
-  },
-  { 
-    id: 7, 
-    nom: "Bernard", 
-    prenom: "Antoine", 
-    email: "antoine.bernard@example.com", 
-    telephone: "06 78 90 12 34", 
-    poste: "Comptable", 
-    departement: "Finance", 
-    dateEmbauche: "14/02/2020",
-    statut: "Actif"
-  },
-  { 
-    id: 8, 
-    nom: "Robert", 
-    prenom: "Julie", 
-    email: "julie.robert@example.com", 
-    telephone: "06 89 01 23 45", 
-    poste: "Assistante administrative", 
-    departement: "Administration", 
-    dateEmbauche: "29/07/2022",
-    statut: "Actif"
   }
 ];
 
-// Statistiques des employés
+// Statistiques pour le tableau de bord
 const stats = [
-  { label: "Total employés", value: 48, icon: <Users />, accent: "bg-blue-600" },
-  { label: "Nouveaux ce mois", value: 3, icon: <UserPlus />, accent: "bg-green-600" },
-  { label: "Départs ce mois", value: 1, icon: <UserMinus />, accent: "bg-red-600" },
-  { label: "Taux de rétention", value: "96%", icon: <Users />, accent: "bg-purple-600" },
+  {
+    label: "Total des employés",
+    value: "248",
+    icon: <Users className="h-5 w-5" />,
+    accent: "bg-blue-600"
+  },
+  {
+    label: "Nouveaux ce mois",
+    value: "12",
+    icon: <Calendar className="h-5 w-5" />,
+    accent: "bg-green-600"
+  },
+  {
+    label: "Ancienneté moyenne",
+    value: "3.5 ans",
+    icon: <Clock className="h-5 w-5" />,
+    accent: "bg-amber-600"
+  },
+  {
+    label: "Taux de rétention",
+    value: "94%",
+    icon: <Building2 className="h-5 w-5" />,
+    accent: "bg-purple-600"
+  }
 ];
 
 // Interface pour le type d'employé
@@ -118,62 +96,52 @@ interface Employee {
   statut: string;
 }
 
-// Interface pour le formulaire d'employé
-interface EmployeeForm {
-  nom: string;
-  prenom: string;
-  email: string;
-  telephone: string;
-  poste: string;
-  departement: string;
-  dateEmbauche: string;
-  statut: string;
-}
-
 // Départements disponibles
 const departments = [
   "Technique",
   "Marketing",
-  "Commercial",
-  "Ressources Humaines",
+  "Ventes",
   "Finance",
-  "Direction",
-  "Création",
+  "Ressources Humaines",
   "Management",
-  "Support",
-  "Autre"
+  "Création",
+  "Support"
 ];
 
 // Statuts disponibles
 const statuses = ["Actif", "Congé", "Inactif"];
 
 export default function EmployesPage() {
-  // Utiliser useParams pour récupérer le slug de l'URL
-  const params = useParams();
-  const slug = params.slug as string;
+  const { isAuthenticated, currentCompany, currentAdmin } = useAuth();
+  const router = useRouter();
+  
+  // Rediriger vers la page de login si l'utilisateur n'est pas authentifié
+  useEffect(() => {
+    if (!isAuthenticated || !currentCompany) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, currentCompany, router]);
+  
   // États pour la gestion des employés
   const [employees, setEmployees] = useState<Employee[]>(employeesData);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-  const [formData, setFormData] = useState<EmployeeForm>({
-    nom: "",
-    prenom: "",
-    email: "",
-    telephone: "",
-    poste: "",
-    departement: "Technique",
-    dateEmbauche: new Date().toISOString().split('T')[0],
-    statut: "Actif"
-  });
   const [isDepartmentDropdownOpen, setIsDepartmentDropdownOpen] = useState(false);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
+  
+  // Charger les données des employés depuis l'entreprise connectée
+  useEffect(() => {
+    if (currentCompany) {
+      // Dans une application réelle, nous chargerions les employés depuis une API
+      // Pour cette démo, nous utilisons les données fictives
+      setEmployees(employeesData);
+      toast.success(`Données des employés de ${currentCompany.name} chargées`);
+    }
+  }, [currentCompany]);
   
   // Filtrer les employés en fonction des critères de recherche
   const filteredEmployees = employees.filter(employee => {
@@ -194,7 +162,6 @@ export default function EmployesPage() {
   const totalPages = Math.ceil(filteredEmployees.length / employeesPerPage);
   const indexOfLastEmployee = currentPage * employeesPerPage;
   const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const currentEmployees = filteredEmployees.slice(indexOfFirstEmployee, indexOfLastEmployee);
   
   // Gérer les changements de page
@@ -202,130 +169,22 @@ export default function EmployesPage() {
     setCurrentPage(pageNumber);
   };
   
-  // Gérer les changements dans le formulaire
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-  
-  // Ajouter un nouvel employé
-  const handleAddEmployee = () => {
-    const newEmployee: Employee = {
-      id: employees.length > 0 ? Math.max(...employees.map(e => e.id)) + 1 : 1,
-      ...formData
-    };
-    
-    setEmployees([...employees, newEmployee]);
-    setIsAddModalOpen(false);
-    resetForm();
-  };
-  
-  // Modifier un employé existant
-  const handleEditEmployee = () => {
-    if (!selectedEmployee) return;
-    
-    const updatedEmployees = employees.map(employee => 
-      employee.id === selectedEmployee.id ? { ...employee, ...formData } : employee
-    );
-    
-    setEmployees(updatedEmployees);
-    setIsEditModalOpen(false);
-    setSelectedEmployee(null);
-    resetForm();
-  };
-  
-  // Supprimer un employé
-  const handleDeleteEmployee = () => {
-    if (!selectedEmployee) return;
-    
-    const updatedEmployees = employees.filter(employee => employee.id !== selectedEmployee.id);
-    setEmployees(updatedEmployees);
-    setIsDeleteModalOpen(false);
-    setSelectedEmployee(null);
-  };
-  
-  // Ouvrir le modal d'édition et pré-remplir le formulaire
-  const openEditModal = (employee: Employee) => {
+  // Ouvrir le modal de visualisation des détails
+  const openViewModal = (employee: Employee) => {
     setSelectedEmployee(employee);
-    setFormData({
-      nom: employee.nom,
-      prenom: employee.prenom,
-      email: employee.email,
-      telephone: employee.telephone,
-      poste: employee.poste,
-      departement: employee.departement,
-      dateEmbauche: employee.dateEmbauche,
-      statut: employee.statut
-    });
-    setIsEditModalOpen(true);
+    setIsViewModalOpen(true);
   };
   
-  // Ouvrir le modal de suppression
-  const openDeleteModal = (employee: Employee) => {
-    setSelectedEmployee(employee);
-    setIsDeleteModalOpen(true);
-  };
-  
-  // Réinitialiser le formulaire
-  const resetForm = () => {
-    setFormData({
-      nom: "",
-      prenom: "",
-      email: "",
-      telephone: "",
-      poste: "",
-      departement: "Technique",
-      dateEmbauche: new Date().toISOString().split('T')[0],
-      statut: "Actif"
-    });
-  };
-  
-  // Simuler l'importation d'un fichier Excel
-  const handleImportExcel = () => {
-    // Dans une application réelle, nous traiterions le fichier Excel ici
-    // Pour cette démo, nous ajoutons simplement quelques employés fictifs
-    const newEmployees: Employee[] = [
-      { 
-        id: employees.length > 0 ? Math.max(...employees.map(e => e.id)) + 1 : 1, 
-        nom: "Dubois", 
-        prenom: "Marie", 
-        email: "marie.dubois@example.com", 
-        telephone: "06 78 90 12 34", 
-        poste: "Analyste Marketing", 
-        departement: "Marketing", 
-        dateEmbauche: "01/05/2023",
-        statut: "Actif"
-      },
-      { 
-        id: employees.length > 0 ? Math.max(...employees.map(e => e.id)) + 2 : 2, 
-        nom: "Bernard", 
-        prenom: "Lucas", 
-        email: "lucas.bernard@example.com", 
-        telephone: "06 89 01 23 45", 
-        poste: "Développeur Mobile", 
-        departement: "Technique", 
-        dateEmbauche: "15/03/2023",
-        statut: "Actif"
-      },
-      { 
-        id: employees.length > 0 ? Math.max(...employees.map(e => e.id)) + 3 : 3, 
-        nom: "Moreau", 
-        prenom: "Camille", 
-        email: "camille.moreau@example.com", 
-        telephone: "06 90 12 34 56", 
-        poste: "Responsable RH", 
-        departement: "Ressources Humaines", 
-        dateEmbauche: "10/01/2022",
-        statut: "Congé"
-      }
-    ];
-    
-    setEmployees([...employees, ...newEmployees]);
-    setIsImportModalOpen(false);
+  // Fermer le modal de visualisation
+  const closeViewModal = () => {
+    setIsViewModalOpen(false);
+    setSelectedEmployee(null);
   };
   
   // Exporter les données au format CSV
   const handleExportCSV = () => {
+    if (!currentCompany) return;
+    
     const headers = ["ID", "Nom", "Prénom", "Email", "Téléphone", "Poste", "Département", "Date d'embauche", "Statut"];
     const csvData = [
       headers.join(","),
@@ -346,15 +205,32 @@ export default function EmployesPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `employes_${slug}_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute("download", `employes_${currentCompany.name.toLowerCase().replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    
+    toast.success('Données exportées avec succès');
   };
   
   return (
-    <div className="py-4 ">
+    <div className="py-4">
+      
+      {/* En-tête avec le nom de l'entreprise */}
+      {currentCompany && (
+        <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-[var(--zalama-text)]">Employés de {currentCompany.name}</h2>
+              <p className="text-sm text-[var(--zalama-text)]/70 mt-1">Gestion des ressources humaines</p>
+            </div>
+            <div className="bg-[var(--zalama-blue)]/10 text-[var(--zalama-blue)] text-sm font-medium px-3 py-1 rounded-full">
+              {currentCompany.employeesCount} employés au total
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Statistiques */}
       <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-6 mb-6">
@@ -366,7 +242,7 @@ export default function EmployesPage() {
         </div>
       </div>
       
-      {/* Barre d&apos;actions */}
+      {/* Barre d'actions */}
       <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-2 mb-6">
         <div className="flex flex-col sm:flex-row justify-between gap-2">
           <div className="flex flex-wrap gap-2">
@@ -434,7 +310,7 @@ export default function EmployesPage() {
               </button>
               
               {isStatusDropdownOpen && (
-                <div className="absolute z-10 mt-1 w-48 rounded-md shadow-lg bg-[var(--zalama-card)] border border-[var(--zalama-border)]">
+                <div className="absolute z-10 mt-1 w-56 rounded-md shadow-lg bg-[var(--zalama-card)] border border-[var(--zalama-border)]">
                   <div className="py-1">
                     <button
                       onClick={() => {
@@ -463,31 +339,14 @@ export default function EmployesPage() {
             </div>
           </div>
           
-          {/* Boutons d'action */}
+          {/* Bouton d'exportation */}
           <div className="flex gap-2">
-            <button 
-              onClick={() => setIsImportModalOpen(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-            >
-              <Upload className="h-4 w-4" />
-              <span>Importer</span>
-            </button>
             <button 
               onClick={handleExportCSV}
               className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
             >
               <Download className="h-4 w-4" />
-              <span>Exporter</span>
-            </button>
-            <button 
-              onClick={() => {
-                resetForm();
-                setIsAddModalOpen(true);
-              }}
-              className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[var(--zalama-blue)] text-white"
-            >
-              <UserPlus className="h-4 w-4" />
-              <span>Ajouter</span>
+              <span>Exporter en CSV</span>
             </button>
           </div>
         </div>
@@ -495,7 +354,7 @@ export default function EmployesPage() {
       
       {/* Tableau des employés */}
       <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] overflow-hidden mb-6">
-        <div className="overflow-x-auto" style={{ maxWidth: '100%' }}>
+        <div className="overflow-x-auto">
           <table className="w-full table-fixed">
             <thead>
               <tr className="border-b border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]">
@@ -509,7 +368,7 @@ export default function EmployesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--zalama-border)]">
-              {employeesData.map((employee) => (
+              {currentEmployees.map((employee) => (
                 <tr key={employee.id} className="hover:bg-[var(--zalama-bg-light)]/50 transition-colors">
                   <td className="px-4 py-4 whitespace-nowrap overflow-hidden text-ellipsis">
                     <div className="flex items-center">
@@ -556,18 +415,11 @@ export default function EmployesPage() {
                   <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end gap-2">
                       <button 
-                        onClick={() => openEditModal(employee)}
+                        onClick={() => openViewModal(employee)}
                         className="p-1 rounded-full hover:bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]/70 hover:text-[var(--zalama-text)]"
-                        title="Modifier"
+                        title="Voir les détails"
                       >
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      <button 
-                        onClick={() => openDeleteModal(employee)}
-                        className="p-1 rounded-full hover:bg-red-100 text-red-400 hover:text-red-600"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="h-4 w-4" />
+                        <Eye className="h-4 w-4" />
                       </button>
                     </div>
                   </td>
@@ -611,350 +463,93 @@ export default function EmployesPage() {
           </div>
         </div>
       </div>
-
-      {/* Modale d'ajout d'employé */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[var(--zalama-card)] rounded-lg p-6 w-full max-w-lg">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-[var(--zalama-text)]">Ajouter un employé</h3>
-              <button 
-                onClick={() => setIsAddModalOpen(false)}
-                className="text-[var(--zalama-text)]/70 hover:text-[var(--zalama-text)]"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <form onSubmit={(e) => { e.preventDefault(); handleAddEmployee(); }}>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Prénom</label>
-                  <input
-                    type="text"
-                    name="prenom"
-                    value={formData.prenom}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Nom</label>
-                  <input
-                    type="text"
-                    name="nom"
-                    value={formData.nom}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Téléphone</label>
-                  <input
-                    type="tel"
-                    name="telephone"
-                    value={formData.telephone}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Poste</label>
-                  <input
-                    type="text"
-                    name="poste"
-                    value={formData.poste}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Département</label>
-                  <select
-                    name="departement"
-                    value={formData.departement}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  >
-                    {departments.map(dept => (
-                      <option key={dept} value={dept}>{dept}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Date d&apos;embauche</label>
-                  <input
-                    type="date"
-                    name="dateEmbauche"
-                    value={formData.dateEmbauche}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Statut</label>
-                  <select
-                    name="statut"
-                    value={formData.statut}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  >
-                    {statuses.map(status => (
-                      <option key={status} value={status}>{status}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
+      
+      {/* Modal de visualisation des détails */}
+      {isViewModalOpen && selectedEmployee && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-[var(--zalama-card)] rounded-lg shadow-xl w-full max-w-2xl">
+            <div className="p-6 border-b border-[var(--zalama-border)]">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-[var(--zalama-text)]">
+                  Détails de l&apos;employé
+                </h3>
+                <button 
+                  onClick={closeViewModal}
+                  className="p-1 rounded-full hover:bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]/70 hover:text-[var(--zalama-text)]"
                 >
-                  Annuler
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-lg bg-[var(--zalama-blue)] text-white"
-                >
-                  Ajouter
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modale de modification d'employé */}
-      {isEditModalOpen && selectedEmployee && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[var(--zalama-card)] rounded-lg p-6 w-full max-w-lg">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-[var(--zalama-text)]">Modifier un employé</h3>
-              <button 
-                onClick={() => {
-                  setIsEditModalOpen(false);
-                  setSelectedEmployee(null);
-                }}
-                className="text-[var(--zalama-text)]/70 hover:text-[var(--zalama-text)]"
-              >
-                <X className="h-5 w-5" />
-              </button>
             </div>
-            <form onSubmit={(e) => { e.preventDefault(); handleEditEmployee(); }}>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Prénom</label>
-                  <input
-                    type="text"
-                    name="prenom"
-                    value={formData.prenom}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  />
+            
+            <div className="p-6">
+              <div className="flex items-center mb-6">
+                <div className="h-16 w-16 rounded-full bg-[var(--zalama-blue)]/10 flex items-center justify-center text-[var(--zalama-blue)] text-xl font-medium flex-shrink-0">
+                  {selectedEmployee.prenom[0]}{selectedEmployee.nom[0]}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Nom</label>
-                  <input
-                    type="text"
-                    name="nom"
-                    value={formData.nom}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Téléphone</label>
-                  <input
-                    type="tel"
-                    name="telephone"
-                    value={formData.telephone}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Poste</label>
-                  <input
-                    type="text"
-                    name="poste"
-                    value={formData.poste}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Département</label>
-                  <select
-                    name="departement"
-                    value={formData.departement}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  >
-                    {departments.map(dept => (
-                      <option key={dept} value={dept}>{dept}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Date d&apos;embauche</label>
-                  <input
-                    type="date"
-                    name="dateEmbauche"
-                    value={formData.dateEmbauche}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Statut</label>
-                  <select
-                    name="statut"
-                    value={formData.statut}
-                    onChange={handleFormChange}
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                    required
-                  >
-                    {statuses.map(status => (
-                      <option key={status} value={status}>{status}</option>
-                    ))}
-                  </select>
+                <div className="ml-4">
+                  <h2 className="text-xl font-semibold text-[var(--zalama-text)]">{selectedEmployee.prenom} {selectedEmployee.nom}</h2>
+                  <p className="text-[var(--zalama-text)]/70">{selectedEmployee.poste}</p>
                 </div>
               </div>
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsEditModalOpen(false);
-                    setSelectedEmployee(null);
-                  }}
-                  className="px-4 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-lg bg-[var(--zalama-blue)] text-white"
-                >
-                  Enregistrer
-                </button>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <h4 className="text-sm font-medium text-[var(--zalama-text)]/70 mb-2">Informations personnelles</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <Mail className="h-4 w-4 text-[var(--zalama-text)]/70 mr-2" />
+                      <span className="text-[var(--zalama-text)]">{selectedEmployee.email}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Phone className="h-4 w-4 text-[var(--zalama-text)]/70 mr-2" />
+                      <span className="text-[var(--zalama-text)]">{selectedEmployee.telephone}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="text-sm font-medium text-[var(--zalama-text)]/70 mb-2">Informations professionnelles</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <Building2 className="h-4 w-4 text-[var(--zalama-text)]/70 mr-2" />
+                      <span className="text-[var(--zalama-text)]">{selectedEmployee.departement}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Calendar className="h-4 w-4 text-[var(--zalama-text)]/70 mr-2" />
+                      <span className="text-[var(--zalama-text)]">Embauché le {selectedEmployee.dateEmbauche}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="h-4 w-4 text-[var(--zalama-text)]/70 mr-2 flex items-center justify-center">
+                        <div className={`h-3 w-3 rounded-full ${
+                          selectedEmployee.statut === 'Actif' 
+                            ? 'bg-green-500' 
+                            : selectedEmployee.statut === 'Congé' 
+                              ? 'bg-yellow-500' 
+                              : 'bg-red-500'
+                        }`}></div>
+                      </div>
+                      <span className="text-[var(--zalama-text)]">Statut: {selectedEmployee.statut}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modale de suppression d'employé */}
-      {isDeleteModalOpen && selectedEmployee && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[var(--zalama-card)] rounded-lg p-6 w-full max-w-md">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-[var(--zalama-text)]">Confirmer la suppression</h3>
+              
+              <div className="border-t border-[var(--zalama-border)] pt-4">
+                <p className="text-sm text-[var(--zalama-text)]/70">
+                  Note: Les informations des employés sont en lecture seule. Pour toute modification, veuillez contacter le service RH.
+                </p>
+              </div>
+            </div>
+            
+            <div className="p-4 border-t border-[var(--zalama-border)] flex justify-end">
               <button 
-                onClick={() => {
-                  setIsDeleteModalOpen(false);
-                  setSelectedEmployee(null);
-                }}
-                className="text-[var(--zalama-text)]/70 hover:text-[var(--zalama-text)]"
+                onClick={closeViewModal}
+                className="px-4 py-2 bg-[var(--zalama-bg-light)] text-[var(--zalama-text)] rounded-md hover:bg-[var(--zalama-bg-light)]/80 transition-colors"
               >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <p className="text-[var(--zalama-text)] mb-6">
-              Êtes-vous sûr de vouloir supprimer l&apos;employé <span className="font-semibold">{selectedEmployee.prenom} {selectedEmployee.nom}</span> ? Cette action est irréversible.
-            </p>
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => {
-                  setIsDeleteModalOpen(false);
-                  setSelectedEmployee(null);
-                }}
-                className="px-4 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-              >
-                Annuler
-              </button>
-              <button
-                onClick={handleDeleteEmployee}
-                className="px-4 py-2 rounded-lg bg-red-600 text-white"
-              >
-                Supprimer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modale d'importation d'employés */}
-      {isImportModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[var(--zalama-card)] rounded-lg p-6 w-full max-w-md">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-[var(--zalama-text)]">Importer des employés</h3>
-              <button 
-                onClick={() => setIsImportModalOpen(false)}
-                className="text-[var(--zalama-text)]/70 hover:text-[var(--zalama-text)]"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <p className="text-[var(--zalama-text)]/70 mb-4">
-              Sélectionnez un fichier Excel (.xlsx) ou CSV (.csv) contenant les données des employés à importer.
-            </p>
-            <div className="border-2 border-dashed border-[var(--zalama-border)] rounded-lg p-8 mb-4 text-center">
-              <Upload className="h-10 w-10 mx-auto mb-2 text-[var(--zalama-text)]/50" />
-              <p className="text-[var(--zalama-text)] font-medium">Glissez-déposez un fichier ici</p>
-              <p className="text-[var(--zalama-text)]/70 text-sm mb-4">ou</p>
-              <button className="px-4 py-2 rounded-lg bg-[var(--zalama-blue)] text-white">
-                Parcourir les fichiers
-              </button>
-              <input type="file" className="hidden" accept=".xlsx,.csv" onChange={handleImportExcel} />
-            </div>
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setIsImportModalOpen(false)}
-                className="px-4 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]/50 text-[var(--zalama-text)]"
-              >
-                Annuler
-              </button>
-              <button
-                className="px-4 py-2 rounded-lg bg-[var(--zalama-blue)] text-white opacity-50 cursor-not-allowed"
-                disabled
-              >
-                Importer
+                Fermer
               </button>
             </div>
           </div>

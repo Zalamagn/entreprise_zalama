@@ -4,16 +4,17 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
-// Les liens seront générés dynamiquement en fonction du slug de l'entreprise
-const getNavItems = (slug: string) => [
-  { label: 'Tableau de bord', icon: Home, href: `/dashboard/entreprise/${slug}` },
-  { label: 'Employés', icon: Users, href: `/dashboard/entreprise/${slug}/employes` },
-  { label: 'Finances', icon: CreditCard, href: `/dashboard/entreprise/${slug}/finances` },
-  { label: 'Statistiques', icon: BarChart2, href: `/dashboard/entreprise/${slug}/statistiques` },
-  { label: 'Demandes', icon: FileText, href: `/dashboard/entreprise/${slug}/demandes` },
-  { label: 'Alertes', icon: AlertCircle, href: `/dashboard/entreprise/${slug}/alertes` },
-  { label: 'Paramètres', icon: Settings, href: `/dashboard/entreprise/${slug}/parametres` },
+// Les liens de navigation pour le tableau de bord
+const getNavItems = () => [
+  { label: 'Tableau de bord', icon: Home, href: `/dashboard` },
+  { label: 'Employés', icon: Users, href: `/dashboard/employes` },
+  { label: 'Finances', icon: CreditCard, href: `/dashboard/finances` },
+  { label: 'Statistiques', icon: BarChart2, href: `/dashboard/statistiques` },
+  { label: 'Demandes', icon: FileText, href: `/dashboard/demandes` },
+  { label: 'Alertes', icon: AlertCircle, href: `/dashboard/alertes` },
+  { label: 'Paramètres', icon: Settings, href: `/dashboard/parametres` },
 ];
 
 export default function EntrepriseSidebar() {
@@ -21,13 +22,10 @@ export default function EntrepriseSidebar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  
-  // Extraire le slug de l'entreprise du pathname
-  const slugMatch = pathname ? pathname.match(/\/dashboard\/entreprise\/([^\/]+)/) : null;
-  const slug = slugMatch ? slugMatch[1] : 'default';
+  const { currentCompany, currentAdmin, logout } = useAuth();
   
   // Générer les liens de navigation avec le slug
-  const navItems = getNavItems(slug);
+  const navItems = getNavItems();
 
   const toggleSidebar = () => {
     const newCollapsedState = !collapsed;
@@ -118,12 +116,12 @@ export default function EntrepriseSidebar() {
           >
             <div className={`flex items-center ${collapsed ? 'justify-center' : ''}`}>
               <div className="w-8 h-8 rounded-full bg-[var(--zalama-blue)] flex items-center justify-center text-white font-semibold flex-shrink-0">
-                E
+                {currentAdmin?.name.charAt(0) || 'A'}
               </div>
               {!collapsed && (
                 <div className="ml-3 sidebar-text">
-                  <p className="text-sm font-medium">{slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' ')}</p>
-                  <p className="text-xs text-[var(--zalama-gray)]/60">Administrateur</p>
+                  <p className="text-sm font-medium">{currentCompany?.name || 'Entreprise'}</p>
+                  <p className="text-xs text-[var(--zalama-gray)]/60">{currentAdmin?.role || 'Administrateur'}</p>
                 </div>
               )}
             </div>
@@ -134,22 +132,13 @@ export default function EntrepriseSidebar() {
             <div className="absolute bottom-full left-0 w-full mb-2 bg-[var(--zalama-card)] dark:text-gray-300 rounded-lg border border-[var(--zalama-border)] shadow-lg overflow-hidden">
               <ul>
                 <li>
-                  <Link 
-                    href="/profile" 
-                    className="flex items-center px-4 py-2 text-sm text-[var(--zalama-gray)]/80 hover:bg-[var(--zalama-bg-light)] hover:text-[var(--zalama-gray)]"
-                  >
-                    <User2 className="w-4 h-4 mr-2" />
-                    Profil
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    href="/auth/logout" 
-                    className="flex items-center px-4 py-2 text-sm text-red-400 hover:bg-red-500/10"
+                  <button 
+                    className="flex w-full items-center px-4 py-2 text-sm text-red-400 hover:bg-red-500/10"
+                    onClick={logout}
                   >
                     <LogOut className="w-4 h-4 mr-2" />
                     Déconnexion
-                  </Link>
+                  </button>
                 </li>
               </ul>
             </div>

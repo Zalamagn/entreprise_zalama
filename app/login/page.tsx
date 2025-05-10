@@ -19,9 +19,13 @@ export default function LoginPage() {
     
     try {
       const success = await login(email, password);
-      if (!success) {
-        // L'erreur est déjà affichée via toast dans le contexte d'authentification
+      if (success) {
+        // Forcer la redirection ici directement
+        setTimeout(() => {
+          window.location.replace('/dashboard');
+        }, 1000);
       }
+      // Si échec, l'erreur est déjà affichée via toast dans le contexte d'authentification
     } finally {
       setIsLoading(false);
     }

@@ -4,19 +4,27 @@ import type { NextRequest } from 'next/server';
 // Routes qui ne nécessitent pas d'authentification
 const publicRoutes = ['/login'];
 
+// Routes statiques à ignorer
+const staticRoutes = ['/_next', '/api', '/images', '/fonts', '/favicon.ico'];
+
 export function middleware(request: NextRequest) {
   const isLoggedIn = request.cookies.has('zalama-auth');
   const { pathname } = request.nextUrl;
-
-  // Rediriger vers la page de login si l'utilisateur n'est pas connecté et essaie d'accéder à une route protégée
-  if (!isLoggedIn && !publicRoutes.includes(pathname) && !pathname.startsWith('/_next') && !pathname.startsWith('/api') && !pathname.includes('.')) {
+  
+  // Ignorer les routes statiques et les fichiers
+  if (staticRoutes.some(route => pathname.startsWith(route)) || pathname.includes('.')) {
+    return NextResponse.next();
+  }
+  
+  // Si l'utilisateur n'est pas connecté et essaie d'accéder à une route protégée
+  if (!isLoggedIn && !publicRoutes.includes(pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }
 
-  // Rediriger vers le dashboard si l'utilisateur est déjà connecté et essaie d'accéder à la page de login
-  if (isLoggedIn && publicRoutes.includes(pathname)) {
+  // Si l'utilisateur est déjà connecté et essaie d'accéder à la page de login ou à la racine
+  if (isLoggedIn && (publicRoutes.includes(pathname) || pathname === '/')) {
     const url = request.nextUrl.clone();
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);

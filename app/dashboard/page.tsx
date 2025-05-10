@@ -1,11 +1,12 @@
 "use client";
 
-import React from 'react';
-import { Users, FileText, Star, BarChart2, CreditCard, Clock, AlertCircle, Download } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { Users, FileText, Star, BarChart2, CreditCard, Clock, AlertCircle, Download, Building2 } from 'lucide-react';
 import StatCard from '@/components/dashboard/StatCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
 import { 
   LineChart, 
   Line, 
@@ -163,9 +164,13 @@ export default function EntrepriseDashboardPage() {
   const router = useRouter();
   
   // Rediriger vers la page de login si l'utilisateur n'est pas authentifié
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isAuthenticated || !currentCompany) {
       router.push('/login');
+    } else {
+      toast.success(`Bienvenue sur le tableau de bord de ${currentCompany.name}`, {
+        id: 'dashboard-welcome'
+      });
     }
   }, [isAuthenticated, currentCompany, router]);
   
@@ -205,6 +210,41 @@ export default function EntrepriseDashboardPage() {
 
   return (
     <div className="dashboard-container px-6 py-4">
+      
+      {/* En-tête avec les informations de l'entreprise */}
+      {currentCompany && (
+        <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-6 mb-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center">
+              <div className="h-16 w-16 relative mr-4 bg-gray-100 dark:bg-gray-700 rounded-md overflow-hidden">
+                <Image 
+                  src={currentCompany.logo} 
+                  alt={`${currentCompany.name} logo`}
+                  fill
+                  className="object-contain p-2"
+                />
+              </div>
+              <div>
+                <h2 className="text-2xl font-semibold text-[var(--zalama-text)]">
+                  {currentCompany.name}
+                </h2>
+                <p className="text-sm text-[var(--zalama-text)]/70">
+                  {currentCompany.industry} • {currentCompany.employeesCount} employés
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="bg-[var(--zalama-blue)]/10 text-[var(--zalama-blue)] text-sm font-medium px-3 py-1 rounded-full flex items-center">
+                <Building2 className="h-4 w-4 mr-1" />
+                Partenaire depuis {new Date(currentCompany.createdAt).getFullYear()}
+              </div>
+              <div className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
+                Compte actif
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Statistiques générales */}
       <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-6 mb-6">

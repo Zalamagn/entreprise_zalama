@@ -1,15 +1,18 @@
 "use client";
-import { Bell, Sun, Moon } from 'lucide-react';
+import { Bell, Sun, Moon, LogOut, User } from 'lucide-react';
 import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
 // Utilisation du composant NotificationDrawer (sans 's') du dossier dashboard/notifications
 import NotificationDrawer from '../../components/dashboard/notifications/NotificationDrawer';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function EntrepriseHeader() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
+  const { logout, currentAdmin } = useAuth();
   
   // Obtenir le titre de la page en fonction du chemin
   const getPageTitle = () => {
@@ -62,6 +65,31 @@ export default function EntrepriseHeader() {
           >
             {theme === 'dark' ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-500 dark:text-gray-300" />}
           </button>
+          
+          {/* Menu de profil avec bouton de déconnexion */}
+          <div className="relative">
+            <button 
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none"
+              onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+            >
+              <User className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-200 hidden sm:inline">
+                {currentAdmin?.name || 'Admin'}
+              </span>
+            </button>
+            
+            {profileMenuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={logout}
+                  className="flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Se déconnecter
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
       

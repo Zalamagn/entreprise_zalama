@@ -24,10 +24,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Vérifier si l'utilisateur est déjà connecté au chargement
   useEffect(() => {
-    const storedAuth = localStorage.getItem('zalama-auth');
+    // Vérifier si le cookie d'authentification existe
+    const hasCookie = document.cookie.split(';').some(item => item.trim().startsWith('zalama-auth='));
     const storedAdminId = localStorage.getItem('zalama-admin-id');
     
-    if (storedAuth === 'true' && storedAdminId) {
+    if (hasCookie && storedAdminId) {
       const adminData = JSON.parse(localStorage.getItem('zalama-admin-data') || '{}');
       if (adminData && adminData.id) {
         setIsAuthenticated(true);
@@ -52,20 +53,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const admin = authenticateAdmin(email, password);
       
       if (admin) {
-        setIsAuthenticated(true);
-        setCurrentAdmin(admin);
-        
-        // Sauvegarder les informations de connexion
-        localStorage.setItem('zalama-auth', 'true');
-        localStorage.setItem('zalama-admin-id', admin.id);
-        localStorage.setItem('zalama-admin-data', JSON.stringify(admin));
-        
         // Récupérer les données de l'entreprise associée
         const company = getCompanyById(admin.companyId);
+        
         if (company) {
+          // Mettre à jour l'état d'authentification et les données
+          setIsAuthenticated(true);
+          setCurrentAdmin(admin);
           setCurrentCompany(company);
+          
+          // Sauvegarder les informations de connexion dans localStorage pour la persistance
+          localStorage.setItem('zalama-admin-id', admin.id);
+          localStorage.setItem('zalama-admin-data', JSON.stringify(admin));
+          
+          // Définir un cookie pour que le middleware puisse le détecter
+          document.cookie = `zalama-auth=true; path=/; max-age=86400`; // expire dans 24h
+          
+          // Notification de succès
           toast.success(`Connexion réussie ! Bienvenue ${admin.name}`);
-          router.push('/dashboard');
+          
+          // Forcer la redirection vers le dashboard
+          window.location.href = '/dashboard';
           return true;
         } else {
           toast.error('Erreur: Entreprise non trouvée');
@@ -86,11 +94,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(false);
     setCurrentCompany(null);
     setCurrentAdmin(null);
-    localStorage.removeItem('zalama-auth');
+    
+    // Supprimer les données du localStorage
     localStorage.removeItem('zalama-admin-id');
     localStorage.removeItem('zalama-admin-data');
+    
+    // Supprimer le cookie d'authentification
+    document.cookie = 'zalama-auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    
     toast.success('Vous êtes déconnecté.');
-    router.push('/login');
+    window.location.href = '/login';
   };
 
 

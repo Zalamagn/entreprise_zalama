@@ -12,11 +12,11 @@ export default function Home() {
   useEffect(() => {
     // Rediriger vers le dashboard si l'utilisateur est authentifié, sinon vers la page de login
     if (isAuthenticated) {
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } else {
-      router.push("/login");
+      window.location.href = "/login";
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated]);
 
   // Afficher un écran de chargement pendant la redirection
   return (
