@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Montserrat, Roboto } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { Toaster } from "react-hot-toast";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -23,11 +26,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <body
         className={`${montserrat.variable} ${roboto.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider>
+          <AuthProvider>
+            <Toaster position="top-right" />
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

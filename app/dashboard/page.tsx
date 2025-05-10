@@ -1,9 +1,11 @@
 "use client";
 
 import React from 'react';
-import { useParams } from 'next/navigation';
 import { Users, FileText, Star, BarChart2, CreditCard, Clock, AlertCircle, Download } from 'lucide-react';
 import StatCard from '@/components/dashboard/StatCard';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import { 
   LineChart, 
   Line, 
@@ -157,17 +159,49 @@ const alertesRecentesData = {
 const euroFormatter = (value: number) => `${value.toLocaleString()} €`;
 
 export default function EntrepriseDashboardPage() {
-  // Utiliser useParams pour récupérer le slug de l'URL
-  const params = useParams();
-  const slug = params.slug as string;
- 
+  const { isAuthenticated, currentCompany, currentAdmin } = useAuth();
+  const router = useRouter();
   
-  // Récupérer les données de l'entreprise en fonction du slug
-  const entrepriseData = statsData[ slug as keyof typeof statsData] || statsData['entreprise-xyz'];
-  const demandesEvolution = demandesEvolutionData[slug as keyof typeof demandesEvolutionData] || demandesEvolutionData['entreprise-xyz'];
-  const montantsEvolution = montantsEvolutionData[slug as keyof typeof montantsEvolutionData] || montantsEvolutionData['entreprise-xyz'];
-  const typeDemandes = typeDemandesData[slug as keyof typeof typeDemandesData] || typeDemandesData['entreprise-xyz'];
-  const alertesRecentes = alertesRecentesData[slug as keyof typeof alertesRecentesData] || alertesRecentesData['entreprise-xyz'];
+  // Rediriger vers la page de login si l'utilisateur n'est pas authentifié
+  React.useEffect(() => {
+    if (!isAuthenticated || !currentCompany) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, currentCompany, router]);
+  
+  // Si l'entreprise n'est pas encore chargée, afficher un état de chargement
+  if (!currentCompany) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+  
+  // Utiliser les données de l'entreprise connectée
+  const entrepriseData = {
+    totalEmployes: currentCompany.stats.totalEmployes,
+    employesInscrits: Math.round(currentCompany.stats.totalEmployes * 0.8), // 80% des employés sont inscrits
+    demandesTotal: currentCompany.stats.demandesMois * 12, // Estimation annuelle
+    demandesMoyenne: parseFloat((currentCompany.stats.demandesMois / currentCompany.stats.totalEmployes).toFixed(1)),
+    noteEmployes: 4.5, // Valeur fixe pour la démo
+    montantDebloque: currentCompany.stats.montantTotal * 12, // Estimation annuelle
+    montantARembourser: currentCompany.stats.montantTotal * 0.1, // 10% du montant total
+    tauxRemboursement: 97.5 // Valeur fixe pour la démo
+  };
+  
+  // Utiliser les données de l'entreprise pour les graphiques
+  const demandesEvolution = currentCompany.financeData.demandes;
+  const montantsEvolution = currentCompany.financeData.avances;
+  
+  // Ajouter des couleurs aux données de répartition
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+  const typeDemandes = currentCompany.financeData.repartition.map((item, index) => ({
+    ...item,
+    color: COLORS[index % COLORS.length]
+  }));
+  
+  const alertesRecentes = currentCompany.alertes;
 
   return (
     <div className="dashboard-container px-6 py-4">
