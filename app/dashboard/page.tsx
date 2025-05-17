@@ -112,28 +112,31 @@ const montantsEvolutionData = {
   ]
 };
 
-// Données fictives pour la répartition des types de demandes
-const typeDemandesData = {
+// Données fictives pour la répartition par motifs de demande
+const repartitionMotifsData = {
   'entreprise-xyz': [
-    { name: 'Avance sur salaire', value: 45, color: '#3b82f6' },
-    { name: 'Prêt personnel', value: 25, color: '#10b981' },
-    { name: 'Urgence', value: 15, color: '#f59e0b' },
-    { name: 'Formation', value: 10, color: '#8b5cf6' },
-    { name: 'Autre', value: 5, color: '#ef4444' },
+    { motif: 'Loyer', valeur: 32, color: `hsl(${0 * 45}, 70%, 50%)` },
+    { motif: 'Maladie', valeur: 25, color: `hsl(${1 * 45}, 70%, 50%)` },
+    { motif: 'Éducation', valeur: 18, color: `hsl(${2 * 45}, 70%, 50%)` },
+    { motif: 'Urgence familiale', valeur: 15, color: `hsl(${3 * 45}, 70%, 50%)` },
+    { motif: 'Alimentation', valeur: 10, color: `hsl(${4 * 45}, 70%, 50%)` },
+    { motif: 'Autres', valeur: 5, color: `hsl(${5 * 45}, 70%, 50%)` },
   ],
   'tech-solutions': [
-    { name: 'Avance sur salaire', value: 40, color: '#3b82f6' },
-    { name: 'Prêt personnel', value: 30, color: '#10b981' },
-    { name: 'Urgence', value: 10, color: '#f59e0b' },
-    { name: 'Formation', value: 15, color: '#8b5cf6' },
-    { name: 'Autre', value: 5, color: '#ef4444' },
+    { motif: 'Loyer', valeur: 28, color: `hsl(${0 * 45}, 70%, 50%)` },
+    { motif: 'Maladie', valeur: 22, color: `hsl(${1 * 45}, 70%, 50%)` },
+    { motif: 'Éducation', valeur: 20, color: `hsl(${2 * 45}, 70%, 50%)` },
+    { motif: 'Urgence familiale', valeur: 12, color: `hsl(${3 * 45}, 70%, 50%)` },
+    { motif: 'Alimentation', valeur: 13, color: `hsl(${4 * 45}, 70%, 50%)` },
+    { motif: 'Autres', valeur: 5, color: `hsl(${5 * 45}, 70%, 50%)` },
   ],
   'global-finance': [
-    { name: 'Avance sur salaire', value: 50, color: '#3b82f6' },
-    { name: 'Prêt personnel', value: 20, color: '#10b981' },
-    { name: 'Urgence', value: 15, color: '#f59e0b' },
-    { name: 'Formation', value: 10, color: '#8b5cf6' },
-    { name: 'Autre', value: 5, color: '#ef4444' },
+    { motif: 'Loyer', valeur: 35, color: `hsl(${0 * 45}, 70%, 50%)` },
+    { motif: 'Maladie', valeur: 20, color: `hsl(${1 * 45}, 70%, 50%)` },
+    { motif: 'Éducation', valeur: 15, color: `hsl(${2 * 45}, 70%, 50%)` },
+    { motif: 'Urgence familiale', valeur: 18, color: `hsl(${3 * 45}, 70%, 50%)` },
+    { motif: 'Alimentation', valeur: 8, color: `hsl(${4 * 45}, 70%, 50%)` },
+    { motif: 'Autres', valeur: 4, color: `hsl(${5 * 45}, 70%, 50%)` },
   ]
 };
 
@@ -211,11 +214,11 @@ export default function EntrepriseDashboardPage() {
   const demandesEvolution = currentCompany.financeData.demandes;
   const montantsEvolution = currentCompany.financeData.avances;
   
-  // Ajouter des couleurs aux données de répartition
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
-  const typeDemandes = currentCompany.financeData.repartition.map((item, index) => ({
-    ...item,
-    color: COLORS[index % COLORS.length]
+  // Utiliser les données de répartition par motifs
+  const motifsDemandes = currentCompany.financeData.repartition.map((item, index) => ({
+    motif: item.categorie,
+    valeur: item.montant,
+    color: `hsl(${index * 45}, 70%, 50%)`
   }));
   
   const alertesRecentes = currentCompany.alertes;
@@ -416,24 +419,24 @@ export default function EntrepriseDashboardPage() {
             </div>
           </div>
           
-          {/* Répartition des types de demandes */}
+          {/* Répartition par motifs de demande */}
           <div className="bg-[var(--zalama-bg-light)]/30 rounded-lg p-4">
-            <h3 className="text-md font-medium text-[var(--zalama-text)] mb-3">Types de demandes</h3>
+            <h3 className="text-md font-medium text-[var(--zalama-text)] mb-3">Répartition par motifs</h3>
             <div className="h-72 flex items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={typeDemandes}
+                    data={motifsDemandes}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
                     outerRadius={100}
                     fill="#8884d8"
-                    dataKey="value"
-                    nameKey="name"
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    dataKey="valeur"
+                    nameKey="motif"
+                    label={({ motif, percent }) => `${motif}: ${(percent * 100).toFixed(0)}%`}
                   >
-                    {typeDemandes.map((entry, index) => (
+                    {motifsDemandes.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
@@ -443,6 +446,12 @@ export default function EntrepriseDashboardPage() {
                       borderColor: 'var(--zalama-border)' 
                     }}
                     labelStyle={{ color: 'var(--zalama-text)' }}
+                  />
+                  <Legend 
+                    layout="horizontal" 
+                    verticalAlign="bottom" 
+                    align="center"
+                    formatter={(value) => <span style={{ color: 'var(--zalama-text)' }}>{value}</span>}
                   />
                 </PieChart>
               </ResponsiveContainer>

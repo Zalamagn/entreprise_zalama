@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Settings, User, Lock, Bell, Shield, Palette, Moon, Sun, Save, X } from 'lucide-react';
+import {User, Lock, Shield, Palette, Moon, Sun, Save, X, Trash, Download, CheckCircle, Sparkles } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export default function ParametresPage() {
@@ -35,13 +35,7 @@ export default function ParametresPage() {
           <Lock className="w-4 h-4" />
           <span>Sécurité</span>
         </button>
-        <button 
-          onClick={() => setActiveTab('notifications')}
-          className={`px-4 py-2 rounded-lg ${activeTab === 'notifications' ? 'bg-[var(--zalama-blue)] text-white' : 'hover:bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]'} flex items-center gap-2`}
-        >
-          <Bell className="w-4 h-4" />
-          <span>Notifications</span>
-        </button>
+
         <button 
           onClick={() => setActiveTab('confidentialite')}
           className={`px-4 py-2 rounded-lg ${activeTab === 'confidentialite' ? 'bg-[var(--zalama-blue)] text-white' : 'hover:bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]'} flex items-center gap-2`}
@@ -56,10 +50,7 @@ export default function ParametresPage() {
           <Palette className="w-4 h-4" />
           <span>Apparence</span>
         </button>
-        <button className="px-4 py-2 rounded-lg hover:bg-[var(--zalama-bg-light)] text-[var(--zalama-text)] flex items-center gap-2">
-          <Settings className="w-4 h-4" />
-          <span>Général</span>
-        </button>
+       
       </div>
       
       {/* Contenu des paramètres - Affichage conditionnel selon l'onglet actif */}
@@ -335,34 +326,145 @@ export default function ParametresPage() {
         {activeTab === 'apparence' && (
           <div>
             <h2 className="text-xl font-semibold text-[var(--zalama-text)] mb-4">Apparence</h2>
-            <p className="text-[var(--zalama-text)]/70 mb-6">Personnalisez l&apos;apparence de votre tableau de bord.</p>
+            <p className="text-[var(--zalama-text)]/70 mb-6">Personnalisez l&apos;apparence de votre tableau de bord pour une expérience sur mesure.</p>
             
-            <div className="border-b border-[var(--zalama-border)] pb-6 mb-6">
-              <h3 className="text-lg font-medium text-[var(--zalama-text)] mb-4">Thème</h3>
-              <div className="flex items-center gap-4">
-                <button 
-                  onClick={toggleTheme}
-                  className={`flex items-center justify-center p-4 rounded-lg border ${theme === 'light' ? 'border-[var(--zalama-blue)] bg-[var(--zalama-blue)]/10' : 'border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]'}`}
-                >
-                  <div className="flex flex-col items-center">
-                    <Sun className="w-6 h-6 text-[var(--zalama-text)] mb-2" />
-                    <span className="text-sm font-medium text-[var(--zalama-text)]">Clair</span>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Thème */}
+              <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-6 overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-bl-full -z-10"></div>
+                
+                <h3 className="text-lg font-medium text-[var(--zalama-text)] mb-4 flex items-center gap-2">
+                  <Palette className="w-5 h-5 text-[var(--zalama-blue)]" />
+                  <span>Thème</span>
+                </h3>
+                
+                <p className="text-sm text-[var(--zalama-text)]/70 mb-6">Choisissez entre le mode clair et le mode sombre pour votre tableau de bord.</p>
+                
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button 
+                    onClick={toggleTheme}
+                    className={`flex-1 flex items-center justify-center p-6 rounded-xl border transition-all hover:shadow-md ${theme === 'light' ? 'border-[var(--zalama-blue)] bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 shadow-sm' : 'border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]'}`}
+                  >
+                    <div className="flex flex-col items-center">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 ${theme === 'light' ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-[var(--zalama-bg-light)]'}`}>
+                        <Sun className="w-6 h-6" />
+                      </div>
+                      <span className="text-sm font-medium text-[var(--zalama-text)]">Mode Clair</span>
+                      {theme === 'light' && <span className="text-xs text-[var(--zalama-blue)] mt-1 flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Actif</span>}
+                    </div>
+                  </button>
+                  
+                  <button 
+                    onClick={toggleTheme}
+                    className={`flex-1 flex items-center justify-center p-6 rounded-xl border transition-all hover:shadow-md ${theme === 'dark' ? 'border-[var(--zalama-blue)] bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 shadow-sm' : 'border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]'}`}
+                  >
+                    <div className="flex flex-col items-center">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 ${theme === 'dark' ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'bg-[var(--zalama-bg-light)]'}`}>
+                        <Moon className="w-6 h-6" />
+                      </div>
+                      <span className="text-sm font-medium text-[var(--zalama-text)]">Mode Sombre</span>
+                      {theme === 'dark' && <span className="text-xs text-[var(--zalama-blue)] mt-1 flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Actif</span>}
+                    </div>
+                  </button>
+                </div>
+              </div>
+              
+              {/* Couleurs d'accent */}
+              <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-6 overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-500/10 to-blue-500/10 rounded-bl-full -z-10"></div>
+                
+                <h3 className="text-lg font-medium text-[var(--zalama-text)] mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-[var(--zalama-blue)]" />
+                  <span>Couleur d'accent</span>
+                </h3>
+                
+                <p className="text-sm text-[var(--zalama-text)]/70 mb-6">Personnalisez la couleur principale de votre interface.</p>
+                
+                <div className="grid grid-cols-5 gap-3">
+                  <button className="aspect-square rounded-full bg-blue-500 border-4 border-white dark:border-gray-800 shadow-sm hover:scale-110 transition-transform"></button>
+                  <button className="aspect-square rounded-full bg-indigo-500 border-2 border-white dark:border-gray-800 hover:scale-110 transition-transform"></button>
+                  <button className="aspect-square rounded-full bg-purple-500 border-2 border-white dark:border-gray-800 hover:scale-110 transition-transform"></button>
+                  <button className="aspect-square rounded-full bg-green-500 border-2 border-white dark:border-gray-800 hover:scale-110 transition-transform"></button>
+                  <button className="aspect-square rounded-full bg-amber-500 border-2 border-white dark:border-gray-800 hover:scale-110 transition-transform"></button>
+                </div>
+                
+                <div className="mt-6">
+                  <h4 className="text-sm font-medium text-[var(--zalama-text)] mb-3">Prévisualisation</h4>
+                  <div className="flex gap-3">
+                    <button className="px-4 py-2 rounded-lg bg-blue-500 text-white text-sm">Bouton principal</button>
+                    <button className="px-4 py-2 rounded-lg border border-blue-500 text-blue-500 dark:text-blue-400 text-sm">Bouton secondaire</button>
                   </div>
-                </button>
-                <button 
-                  onClick={toggleTheme}
-                  className={`flex items-center justify-center p-4 rounded-lg border ${theme === 'dark' ? 'border-[var(--zalama-blue)] bg-[var(--zalama-blue)]/10' : 'border-[var(--zalama-border)] bg-[var(--zalama-bg-light)]'}`}
-                >
-                  <div className="flex flex-col items-center">
-                    <Moon className="w-6 h-6 text-[var(--zalama-text)] mb-2" />
-                    <span className="text-sm font-medium text-[var(--zalama-text)]">Sombre</span>
+                </div>
+              </div>
+              
+              {/* Densité de l'interface */}
+              <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-6">
+                <h3 className="text-lg font-medium text-[var(--zalama-text)] mb-4">Densité de l'interface</h3>
+                <p className="text-sm text-[var(--zalama-text)]/70 mb-4">Ajustez l'espacement des éléments de l'interface.</p>
+                
+                <div className="space-y-4">
+                  <label className="flex items-center gap-3 p-3 rounded-lg border border-[var(--zalama-border)] cursor-pointer">
+                    <input type="radio" name="density" className="w-4 h-4 accent-[var(--zalama-blue)]" defaultChecked />
+                    <div>
+                      <h4 className="text-sm font-medium text-[var(--zalama-text)]">Confortable</h4>
+                      <p className="text-xs text-[var(--zalama-text)]/70">Espacement standard pour une meilleure lisibilité</p>
+                    </div>
+                  </label>
+                  
+                  <label className="flex items-center gap-3 p-3 rounded-lg border border-[var(--zalama-border)] cursor-pointer">
+                    <input type="radio" name="density" className="w-4 h-4 accent-[var(--zalama-blue)]" />
+                    <div>
+                      <h4 className="text-sm font-medium text-[var(--zalama-text)]">Compact</h4>
+                      <p className="text-xs text-[var(--zalama-text)]/70">Espacement réduit pour afficher plus d'informations</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              
+              {/* Animations */}
+              <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-6">
+                <h3 className="text-lg font-medium text-[var(--zalama-text)] mb-4">Animations</h3>
+                <p className="text-sm text-[var(--zalama-text)]/70 mb-4">Contrôlez les animations et les transitions de l'interface.</p>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-medium text-[var(--zalama-text)]">Animations de l'interface</h4>
+                      <p className="text-xs text-[var(--zalama-text)]/70">Activer les animations lors des transitions</p>
+                    </div>
+                    <div className="relative inline-block w-10 h-5">
+                      <input type="checkbox" className="opacity-0 w-0 h-0" defaultChecked />
+                      <span className="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-[var(--zalama-blue)] rounded-full before:absolute before:h-4 before:w-4 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform before:translate-x-5"></span>
+                    </div>
                   </div>
-                </button>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-medium text-[var(--zalama-text)]">Animations des graphiques</h4>
+                      <p className="text-xs text-[var(--zalama-text)]/70">Activer les animations dans les graphiques</p>
+                    </div>
+                    <div className="relative inline-block w-10 h-5">
+                      <input type="checkbox" className="opacity-0 w-0 h-0" defaultChecked />
+                      <span className="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-[var(--zalama-blue)] rounded-full before:absolute before:h-4 before:w-4 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform before:translate-x-5"></span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-medium text-[var(--zalama-text)]">Mode réduit pour les performances</h4>
+                      <p className="text-xs text-[var(--zalama-text)]/70">Réduire les animations pour améliorer les performances</p>
+                    </div>
+                    <div className="relative inline-block w-10 h-5">
+                      <input type="checkbox" className="opacity-0 w-0 h-0" />
+                      <span className="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full before:absolute before:h-4 before:w-4 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform"></span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div className="flex justify-end">
-              <button className="px-4 py-2 rounded-lg bg-[var(--zalama-blue)] text-white flex items-center gap-2">
+            
+            <div className="flex justify-end mt-8">
+              <button className="px-6 py-2 rounded-lg bg-[var(--zalama-blue)] text-white flex items-center gap-2 hover:bg-blue-600 transition-colors">
                 <Save className="w-4 h-4" />
                 <span>Enregistrer les préférences</span>
               </button>
@@ -373,8 +475,92 @@ export default function ParametresPage() {
         {activeTab === 'securite' && (
           <div>
             <h2 className="text-xl font-semibold text-[var(--zalama-text)] mb-4">Sécurité</h2>
-            <p className="text-[var(--zalama-text)]/70 mb-6">Gérez les paramètres de sécurité de votre compte.</p>
-            {/* Contenu de sécurité */}
+            <p className="text-[var(--zalama-text)]/70 mb-6">Gérez les paramètres de sécurité de votre compte et modifiez votre mot de passe.</p>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Changement de mot de passe */}
+              <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-6">
+                <h3 className="text-lg font-medium text-[var(--zalama-text)] mb-4">Changer votre mot de passe</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Mot de passe actuel</label>
+                    <input 
+                      type="password" 
+                      className="w-full px-4 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Nouveau mot de passe</label>
+                    <input 
+                      type="password" 
+                      className="w-full px-4 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[var(--zalama-text)]/70 mb-1">Confirmer le nouveau mot de passe</label>
+                    <input 
+                      type="password" 
+                      className="w-full px-4 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <div className="pt-2">
+                    <button className="px-4 py-2 rounded-lg bg-[var(--zalama-blue)] text-white flex items-center gap-2">
+                      <Save className="w-4 h-4" />
+                      <span>Mettre à jour le mot de passe</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Authentification à deux facteurs */}
+              <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-6">
+                <h3 className="text-lg font-medium text-[var(--zalama-text)] mb-4">Authentification à deux facteurs</h3>
+                <p className="text-[var(--zalama-text)]/70 mb-4">Renforcez la sécurité de votre compte en activant l'authentification à deux facteurs.</p>
+                
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-sm font-medium text-[var(--zalama-text)]">Statut</span>
+                  <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Activé</span>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-medium text-[var(--zalama-text)]">Application d'authentification</h4>
+                      <p className="text-xs text-[var(--zalama-text)]/70">Utilisez Google Authenticator, Microsoft Authenticator ou une autre application similaire.</p>
+                    </div>
+                    <div className="relative inline-block w-10 h-5">
+                      <input type="checkbox" className="opacity-0 w-0 h-0" defaultChecked />
+                      <span className="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-[var(--zalama-blue)] rounded-full before:absolute before:h-4 before:w-4 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform before:translate-x-5"></span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-medium text-[var(--zalama-text)]">SMS</h4>
+                      <p className="text-xs text-[var(--zalama-text)]/70">Recevez un code par SMS sur votre téléphone mobile.</p>
+                    </div>
+                    <div className="relative inline-block w-10 h-5">
+                      <input type="checkbox" className="opacity-0 w-0 h-0" />
+                      <span className="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full before:absolute before:h-4 before:w-4 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform"></span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-medium text-[var(--zalama-text)]">Email</h4>
+                      <p className="text-xs text-[var(--zalama-text)]/70">Recevez un code par email.</p>
+                    </div>
+                    <div className="relative inline-block w-10 h-5">
+                      <input type="checkbox" className="opacity-0 w-0 h-0" />
+                      <span className="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full before:absolute before:h-4 before:w-4 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -389,8 +575,94 @@ export default function ParametresPage() {
         {activeTab === 'confidentialite' && (
           <div>
             <h2 className="text-xl font-semibold text-[var(--zalama-text)] mb-4">Confidentialité</h2>
-            <p className="text-[var(--zalama-text)]/70 mb-6">Gérez vos paramètres de confidentialité.</p>
-            {/* Contenu de confidentialité */}
+            <p className="text-[var(--zalama-text)]/70 mb-6">Gérez vos paramètres de confidentialité et contrôlez vos données.</p>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Paramètres de confidentialité */}
+              <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-6">
+                <h3 className="text-lg font-medium text-[var(--zalama-text)] mb-4">Paramètres de confidentialité</h3>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-medium text-[var(--zalama-text)]">Profil public</h4>
+                      <p className="text-xs text-[var(--zalama-text)]/70">Permettre aux autres entreprises de voir votre profil</p>
+                    </div>
+                    <div className="relative inline-block w-10 h-5">
+                      <input type="checkbox" className="opacity-0 w-0 h-0" defaultChecked />
+                      <span className="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-[var(--zalama-blue)] rounded-full before:absolute before:h-4 before:w-4 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform before:translate-x-5"></span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-medium text-[var(--zalama-text)]">Partage des statistiques</h4>
+                      <p className="text-xs text-[var(--zalama-text)]/70">Partager vos statistiques anonymisées pour améliorer nos services</p>
+                    </div>
+                    <div className="relative inline-block w-10 h-5">
+                      <input type="checkbox" className="opacity-0 w-0 h-0" defaultChecked />
+                      <span className="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-[var(--zalama-blue)] rounded-full before:absolute before:h-4 before:w-4 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform before:translate-x-5"></span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-medium text-[var(--zalama-text)]">Historique des activités</h4>
+                      <p className="text-xs text-[var(--zalama-text)]/70">Conserver l'historique de vos activités sur la plateforme</p>
+                    </div>
+                    <div className="relative inline-block w-10 h-5">
+                      <input type="checkbox" className="opacity-0 w-0 h-0" defaultChecked />
+                      <span className="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-[var(--zalama-blue)] rounded-full before:absolute before:h-4 before:w-4 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform before:translate-x-5"></span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-medium text-[var(--zalama-text)]">Cookies de suivi</h4>
+                      <p className="text-xs text-[var(--zalama-text)]/70">Autoriser les cookies de suivi pour personnaliser votre expérience</p>
+                    </div>
+                    <div className="relative inline-block w-10 h-5">
+                      <input type="checkbox" className="opacity-0 w-0 h-0" />
+                      <span className="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full before:absolute before:h-4 before:w-4 before:left-0.5 before:bottom-0.5 before:bg-white before:rounded-full before:transition-transform"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Gestion des données */}
+              <div className="bg-[var(--zalama-card)] rounded-lg border border-[var(--zalama-border)] p-6">
+                <h3 className="text-lg font-medium text-[var(--zalama-text)] mb-4">Gestion des données</h3>
+                
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="text-sm font-medium text-[var(--zalama-text)] mb-2">Exporter vos données</h4>
+                    <p className="text-xs text-[var(--zalama-text)]/70 mb-3">Téléchargez une copie de toutes vos données stockées sur notre plateforme.</p>
+                    <button className="px-4 py-2 rounded-lg bg-[var(--zalama-bg-light)] border border-[var(--zalama-border)] text-[var(--zalama-text)] text-sm flex items-center gap-2">
+                      <Download className="w-4 h-4" />
+                      <span>Exporter les données</span>
+                    </button>
+                  </div>
+                  
+                  <div>
+                    <h4 className="text-sm font-medium text-[var(--zalama-text)] mb-2">Supprimer l'historique</h4>
+                    <p className="text-xs text-[var(--zalama-text)]/70 mb-3">Effacer l'historique de vos activités sur la plateforme.</p>
+                    <button className="px-4 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-700/30 dark:text-amber-400 text-sm flex items-center gap-2">
+                      <X className="w-4 h-4" />
+                      <span>Effacer l'historique</span>
+                    </button>
+                  </div>
+                  
+                  <div>
+                    <h4 className="text-sm font-medium text-[var(--zalama-text)] mb-2">Supprimer le compte</h4>
+                    <p className="text-xs text-[var(--zalama-text)]/70 mb-3">Supprimer définitivement votre compte et toutes vos données.</p>
+                    <button className="px-4 py-2 rounded-lg bg-red-50 border border-red-200 text-red-700 dark:bg-red-900/20 dark:border-red-700/30 dark:text-red-400 text-sm flex items-center gap-2">
+                      <Trash className="w-4 h-4" />
+                      <span>Supprimer le compte</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
