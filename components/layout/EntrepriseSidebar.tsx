@@ -1,5 +1,5 @@
 "use client";
-import { Home, Users, BarChart2, AlertCircle, Settings, LogOut, ChevronLeft, ChevronRight, User2, FileText, CreditCard, MessageSquare } from 'lucide-react';
+import { Home, Users, BarChart2, AlertCircle, Settings, LogOut, ChevronLeft, ChevronRight, User2, FileText, CreditCard, MessageSquare, Star } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
@@ -14,6 +14,7 @@ const getNavItems = () => [
   { label: 'Finances', icon: CreditCard, href: `/dashboard/finances` },
   { label: 'Statistiques', icon: BarChart2, href: `/dashboard/statistiques` },
   { label: 'Alertes', icon: AlertCircle, href: `/dashboard/alertes` },
+  { label: 'Avis des Salariés', icon: Star, href: `/dashboard/avis` },
   { label: 'Messages', icon: MessageSquare, href: `/dashboard/messages`},
   { label: 'Paramètres', icon: Settings, href: `/dashboard/parametres` },
 ];

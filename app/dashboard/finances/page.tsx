@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Euro, TrendingUp, TrendingDown, Filter, Download, Printer, Users } from 'lucide-react';
+import { Euro, TrendingUp, TrendingDown, Filter, Download, Printer, Users, Calendar } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import StatCard from '@/components/dashboard/StatCard';
 import { 
@@ -29,10 +29,10 @@ interface StatItem {
 
 // Les statistiques seront générées dynamiquement en fonction de l'entreprise connectée
 const getStats = (company: any): StatItem[] => [
-  { label: "Montant total", value: `${company?.stats?.montantTotal?.toLocaleString() || 0} GNF`, icon: <Euro />, accent: "bg-blue-600" },
-  { label: "Demandes en cours", value: company?.stats?.demandesEnCours || 0, icon: <TrendingUp />, accent: "bg-green-600" },
-  { label: "Demandes ce mois", value: company?.stats?.demandesMois || 0, icon: <TrendingDown />, accent: "bg-red-600" },
-  { label: "Employés actifs", value: company?.stats?.totalEmployes || 0, icon: <Users />, accent: "bg-amber-600" },
+  { label: "Flux du Montant Financé", value: `${company?.stats?.montantTotal?.toLocaleString() || 0} GNF`, icon: <Euro />, accent: "bg-blue-600" },
+  { label: "Montant total debloqué ce mois ci", value: company?.stats?.montantDebloque || 0, icon: <TrendingUp />, accent: "bg-green-600" },
+  { label: "Montant à rembourser ce mois ci", value: company?.stats?.montantRembourser || 0, icon: <TrendingDown />, accent: "bg-red-600" },
+  { label: "Date limite de Remboursement", value: company?.stats?.dateLimiteRemboursement || 0, icon: <Calendar />, accent: "bg-amber-600" },
 ];
 
 // Données fictives pour les finances (utilisées si les données de l'entreprise ne sont pas disponibles)
@@ -119,6 +119,12 @@ const stats = [
   { label: "Prévisions", value: "+15%", icon: <TrendingUp />, accent: "bg-blue-600" },
 ];
 
+const statsPerService = [
+  { label: "Avance sur Salaire", value: "9 000 GNF", icon: <TrendingUp />, accent: "bg-green-600" },
+  { label: "P2P", value: "12 050 GNF", icon: <TrendingUp />, accent: "bg-red-600" },
+  { label: "Gestion et Conseil Financier", value: "Gratuit", icon: <TrendingUp />, accent: "bg-amber-600" },
+  { label: "Paiement de Salaire", value: "20 000 GNF", icon: <TrendingUp />, accent: "bg-blue-600" },
+];
 // Données pour le graphique d'évolution
 const evolutionData = [
   { mois: 'Jan', revenus: 8000, depenses: 6000 },
@@ -187,6 +193,14 @@ export default function FinancesPage() {
       {/* Statistiques */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
+          <StatCard key={stat.label} {...stat} />
+        ))}
+      </div>
+      
+      {/* Statistiques par service */}
+      <h2 className="text-lg font-semibold text-[var(--zalama-text)] underline">Details Par Service</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6">
+        {statsPerService.map((stat) => (
           <StatCard key={stat.label} {...stat} />
         ))}
       </div>
