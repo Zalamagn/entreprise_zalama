@@ -12,7 +12,6 @@ const getNavItems = () => [
   { label: 'Employés', icon: Users, href: `/dashboard/employes` },
   { label: 'Demandes', icon: FileText, href: `/dashboard/demandes` },
   { label: 'Finances', icon: CreditCard, href: `/dashboard/finances` },
-  { label: 'Statistiques', icon: BarChart2, href: `/dashboard/statistiques` },
   { label: 'Alertes', icon: AlertCircle, href: `/dashboard/alertes` },
   { label: 'Avis des Salariés', icon: Star, href: `/dashboard/avis` },
   { label: 'Messages', icon: MessageSquare, href: `/dashboard/messages`},
