@@ -1,5 +1,5 @@
 "use client";
-import { Home, Users, BarChart2, AlertCircle, Settings, LogOut, ChevronLeft, ChevronRight, User2, FileText, CreditCard } from 'lucide-react';
+import { Home, Users, BarChart2, AlertCircle, Settings, LogOut, ChevronLeft, ChevronRight, User2, FileText, CreditCard, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
@@ -10,10 +10,11 @@ import { useAuth } from '@/contexts/AuthContext';
 const getNavItems = () => [
   { label: 'Tableau de bord', icon: Home, href: `/dashboard` },
   { label: 'Employés', icon: Users, href: `/dashboard/employes` },
+  { label: 'Demandes', icon: FileText, href: `/dashboard/demandes` },
   { label: 'Finances', icon: CreditCard, href: `/dashboard/finances` },
   { label: 'Statistiques', icon: BarChart2, href: `/dashboard/statistiques` },
-  { label: 'Demandes', icon: FileText, href: `/dashboard/demandes` },
   { label: 'Alertes', icon: AlertCircle, href: `/dashboard/alertes` },
+  { label: 'Messages', icon: MessageSquare, href: `/dashboard/messages`},
   { label: 'Paramètres', icon: Settings, href: `/dashboard/parametres` },
 ];
 

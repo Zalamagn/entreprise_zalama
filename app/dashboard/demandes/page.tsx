@@ -100,8 +100,8 @@ const demandesData = [
 // Statistiques des demandes
 const stats = [
   { label: "Total demandes", value: 42, icon: <FileText />, accent: "bg-blue-600" },
-  { label: "En attente", value: 8, icon: <Clock />, accent: "bg-amber-600" },
   { label: "Approuvées", value: 28, icon: <CheckCircle />, accent: "bg-green-600" },
+  { label: "En attente", value: 8, icon: <Clock />, accent: "bg-amber-600" },
   { label: "Refusées", value: 6, icon: <AlertCircle />, accent: "bg-red-600" },
 ];
 
@@ -140,6 +140,13 @@ export default function DemandesPage() {
           <StatCard key={stat.label} {...stat} />
         ))}
       </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat) => (
+          <StatCard key={stat.label} {...stat} />
+        ))}
+      </div>
+      
       
       {/* Barre d&apos;actions */}
       <div className="flex flex-col sm:flex-row justify-between gap-4 mt-2">

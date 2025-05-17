@@ -64,14 +64,14 @@ const stats = [
     accent: "bg-blue-600"
   },
   {
-    label: "Nouveaux ce mois",
-    value: "12",
+    label: "Total Inscrits à ZaLaMa",
+    value: "100",
     icon: <Calendar className="h-5 w-5" />,
     accent: "bg-green-600"
   },
   {
-    label: "Ancienneté moyenne",
-    value: "3.5 ans",
+    label: "Nouveaux ce mois",
+    value: "12",
     icon: <Clock className="h-5 w-5" />,
     accent: "bg-amber-600"
   },
