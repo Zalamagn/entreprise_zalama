@@ -13,6 +13,7 @@ export interface Company {
     montantTotal: number;
     limiteRemboursement: number;
     joursAvantRemboursement: number;
+    dateLimiteRemboursement: string;
   };
   employeeData: {
     departements: { name: string; value: number }[];
@@ -57,7 +58,8 @@ export const companies: Company[] = [
       demandesMois: 35,
       montantTotal: 15000,
       limiteRemboursement: 25000,
-      joursAvantRemboursement: 7
+      joursAvantRemboursement: 7,
+      dateLimiteRemboursement: '20 Juin 2025'
     },
     employeeData: {
       departements: [
@@ -129,7 +131,8 @@ export const companies: Company[] = [
       demandesMois: 18,
       montantTotal: 8900,
       limiteRemboursement: 15000,
-      joursAvantRemboursement: 15
+      joursAvantRemboursement: 15,
+      dateLimiteRemboursement: '20 Juin 2025'
     },
     employeeData: {
       departements: [
@@ -199,7 +202,8 @@ export const companies: Company[] = [
       demandesMois: 45,
       montantTotal: 28500,
       limiteRemboursement: 35000,
-      joursAvantRemboursement: 5
+      joursAvantRemboursement: 5,
+      dateLimiteRemboursement: '20 Juin 2025'
     },
     employeeData: {
       departements: [

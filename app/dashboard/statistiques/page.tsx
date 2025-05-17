@@ -35,7 +35,7 @@ const getStats = (company: any): StatItem[] => [
   { label: "Employés actifs", value: company?.stats?.totalEmployes || 0, icon: <Users />, accent: "bg-blue-600" },
   { label: "Demandes en cours", value: company?.stats?.demandesEnCours || 0, icon: <TrendingUp />, accent: "bg-green-600" },
   { label: "Demandes ce mois", value: company?.stats?.demandesMois || 0, icon: <Activity />, accent: "bg-purple-600" },
-  { label: "Montant total", value: `${company?.stats?.montantTotal?.toLocaleString() || 0} €`, icon: <BarChart2 />, accent: "bg-amber-600" },
+  { label: "Montant total", value: `${company?.stats?.montantTotal?.toLocaleString() || 0} GNF`, icon: <BarChart2 />, accent: "bg-amber-600" },
 ];
 
 // Données pour le graphique d'évolution des utilisateurs

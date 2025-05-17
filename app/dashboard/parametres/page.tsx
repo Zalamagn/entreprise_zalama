@@ -213,7 +213,7 @@ export default function ParametresPage() {
                   <select 
                     className="w-full px-4 py-2 rounded-lg border border-[var(--zalama-border)] bg-[var(--zalama-bg-light)] text-[var(--zalama-text)]"
                   >
-                    <option value="eur">Euro (€)</option>
+                    <option value="eur">Euro (GNF)</option>
                     <option value="usd">Dollar américain ($)</option>
                     <option value="gbp">Livre sterling (£)</option>
                     <option value="jpy">Yen japonais (¥)</option>

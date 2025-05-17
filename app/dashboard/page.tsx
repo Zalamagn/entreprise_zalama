@@ -157,7 +157,7 @@ const alertesRecentesData = {
 };
 
 // Fonction pour formatter les montants en euros
-const euroFormatter = (value: number) => `${value.toLocaleString()} €`;
+const euroFormatter = (value: number) => `${value.toLocaleString()} GNF`;
 
 export default function EntrepriseDashboardPage() {
   const { isAuthenticated, currentCompany, currentAdmin } = useAuth();
@@ -203,7 +203,8 @@ export default function EntrepriseDashboardPage() {
     montantARembourser: currentCompany.stats.montantTotal * 0.1, // 10% du montant total
     tauxRemboursement: 97.5, // Valeur fixe pour la démo
     limiteRemboursement: currentCompany.stats.limiteRemboursement,
-    joursAvantRemboursement: currentCompany.stats.joursAvantRemboursement
+    joursAvantRemboursement: currentCompany.stats.joursAvantRemboursement,
+    dateLimiteRemboursement: currentCompany.stats.dateLimiteRemboursement
   };
   
   // Utiliser les données de l'entreprise pour les graphiques
@@ -255,58 +256,8 @@ export default function EntrepriseDashboardPage() {
             </div>
           </div>
           
-          {/* Informations de remboursement */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-[var(--zalama-bg-light)] rounded-lg p-4 border border-[var(--zalama-border)]">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="text-sm font-medium text-[var(--zalama-text)]/80">Limite de remboursement</h3>
-                  <p className="text-2xl font-bold text-[var(--zalama-text)]">{entrepriseData.limiteRemboursement.toLocaleString()} €</p>
-                </div>
-                <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                  <CreditCard className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                </div>
-              </div>
-              <div className="mt-2">
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                  <div 
-                    className="bg-blue-600 h-2.5 rounded-full" 
-                    style={{ width: `${Math.min(100, (currentCompany.stats.montantTotal / currentCompany.stats.limiteRemboursement) * 100)}%` }}
-                  ></div>
-                </div>
-                <p className="text-xs mt-1 text-[var(--zalama-text)]/70">
-                  {currentCompany.stats.montantTotal.toLocaleString()} € utilisés sur {currentCompany.stats.limiteRemboursement.toLocaleString()} €
-                </p>
-              </div>
-            </div>
-            
-            <div className="bg-[var(--zalama-bg-light)] rounded-lg p-4 border border-[var(--zalama-border)]">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="text-sm font-medium text-[var(--zalama-text)]/80">Prochain remboursement</h3>
-                  <p className="text-2xl font-bold text-[var(--zalama-text)]">{entrepriseData.joursAvantRemboursement} jours</p>
-                </div>
-                <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                  <Clock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-                </div>
-              </div>
-              <div className="mt-2">
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                  <div 
-                    className={`h-2.5 rounded-full ${entrepriseData.joursAvantRemboursement <= 3 ? 'bg-red-500' : entrepriseData.joursAvantRemboursement <= 7 ? 'bg-amber-500' : 'bg-green-500'}`} 
-                    style={{ width: `${100 - Math.min(100, (entrepriseData.joursAvantRemboursement / 30) * 100)}%` }}
-                  ></div>
-                </div>
-                <p className="text-xs mt-1 text-[var(--zalama-text)]/70">
-                  {entrepriseData.joursAvantRemboursement <= 3 
-                    ? 'Remboursement imminent!' 
-                    : entrepriseData.joursAvantRemboursement <= 7 
-                      ? 'Remboursement cette semaine' 
-                      : 'Remboursement à venir'}
-                </p>
-              </div>
-            </div>
-          </div>
+          
+          
         </div>
       )}
       
@@ -346,13 +297,13 @@ export default function EntrepriseDashboardPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <StatCard 
             label="Montant total débloqué" 
-            value={`${entrepriseData.montantDebloque.toLocaleString()} €`} 
+            value={`${entrepriseData.montantDebloque.toLocaleString()} GNF`} 
             icon={<CreditCard />} 
             accent="bg-blue-600" 
           />
           <StatCard 
             label="À rembourser ce mois" 
-            value={`${entrepriseData.montantARembourser.toLocaleString()} €`} 
+            value={`${entrepriseData.montantARembourser.toLocaleString()} GNF`} 
             icon={<Clock />} 
             accent="bg-amber-600" 
           />
@@ -362,7 +313,50 @@ export default function EntrepriseDashboardPage() {
             icon={<BarChart2 />} 
             accent="bg-green-600" 
           />
+        
         </div>
+        {/* Informations de remboursement */}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-[var(--zalama-bg-light)] rounded-lg p-4 border border-[var(--zalama-border)]">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-sm font-medium text-[var(--zalama-text)]/80">Date limite de remboursement</h3>
+                  <p className="text-2xl font-bold text-[var(--zalama-text)]">{entrepriseData.dateLimiteRemboursement}</p>
+                </div>
+                <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                  <CreditCard className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+              </div>
+              
+            </div>
+            
+            <div className="bg-[var(--zalama-bg-light)] rounded-lg p-4 border border-[var(--zalama-border)]">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-sm font-medium text-[var(--zalama-text)]/80">Jours Restants avant Remboursement </h3>
+                  <p className="text-2xl font-bold text-[var(--zalama-text)]">{entrepriseData.joursAvantRemboursement} jours</p>
+                </div>
+                <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                  <Clock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                </div>
+              </div>
+              <div className="mt-2">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                  <div 
+                    className={`h-2.5 rounded-full ${entrepriseData.joursAvantRemboursement <= 3 ? 'bg-red-500' : entrepriseData.joursAvantRemboursement <= 7 ? 'bg-amber-500' : 'bg-green-500'}`} 
+                    style={{ width: `${100 - Math.min(100, (entrepriseData.joursAvantRemboursement / 30) * 100)}%` }}
+                  ></div>
+                </div>
+                <p className="text-xs mt-1 text-[var(--zalama-text)]/70">
+                  {entrepriseData.joursAvantRemboursement <= 3 
+                    ? 'Remboursement imminent!' 
+                    : entrepriseData.joursAvantRemboursement <= 7 
+                      ? 'Remboursement cette semaine' 
+                      : 'Remboursement à venir'}
+                </p>
+              </div>
+            </div>
+          </div>
       </div>
       
       {/* Visualisations et Graphiques */}
@@ -408,7 +402,7 @@ export default function EntrepriseDashboardPage() {
                   <XAxis dataKey="mois" stroke="var(--zalama-text)" />
                   <YAxis stroke="var(--zalama-text)" tickFormatter={euroFormatter} />
                   <Tooltip 
-                    formatter={(value) => [`${value.toLocaleString()} €`, 'Montant']}
+                    formatter={(value) => [`${value.toLocaleString()} GNF`, 'Montant']}
                     contentStyle={{ 
                       backgroundColor: 'var(--zalama-card)', 
                       borderColor: 'var(--zalama-border)' 

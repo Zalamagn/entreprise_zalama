@@ -23,7 +23,7 @@ export const notificationsMock: Notification[] = [
   {
     id: 3,
     title: "Paiement reçu",
-    message: "Le paiement de 1500€ pour le projet XYZ a été reçu avec succès.",
+    message: "Le paiement de 1500GNF pour le projet XYZ a été reçu avec succès.",
     type: "success",
     timestamp: new Date(2025, 4, 1, 14, 20),
     read: false,

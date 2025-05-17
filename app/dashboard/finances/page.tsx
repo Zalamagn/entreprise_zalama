@@ -29,7 +29,7 @@ interface StatItem {
 
 // Les statistiques seront générées dynamiquement en fonction de l'entreprise connectée
 const getStats = (company: any): StatItem[] => [
-  { label: "Montant total", value: `${company?.stats?.montantTotal?.toLocaleString() || 0} €`, icon: <Euro />, accent: "bg-blue-600" },
+  { label: "Montant total", value: `${company?.stats?.montantTotal?.toLocaleString() || 0} GNF`, icon: <Euro />, accent: "bg-blue-600" },
   { label: "Demandes en cours", value: company?.stats?.demandesEnCours || 0, icon: <TrendingUp />, accent: "bg-green-600" },
   { label: "Demandes ce mois", value: company?.stats?.demandesMois || 0, icon: <TrendingDown />, accent: "bg-red-600" },
   { label: "Employés actifs", value: company?.stats?.totalEmployes || 0, icon: <Users />, accent: "bg-amber-600" },
@@ -113,9 +113,9 @@ const transactionsData = [
 
 // Statistiques financières
 const stats = [
-  { label: "Revenus (mois)", value: "9 000 €", icon: <TrendingUp />, accent: "bg-green-600" },
-  { label: "Dépenses (mois)", value: "12 050 €", icon: <TrendingDown />, accent: "bg-red-600" },
-  { label: "Balance", value: "-3 050 €", icon: <Euro />, accent: "bg-amber-600" },
+  { label: "Revenus (mois)", value: "9 000 GNF", icon: <TrendingUp />, accent: "bg-green-600" },
+  { label: "Dépenses (mois)", value: "12 050 GNF", icon: <TrendingDown />, accent: "bg-red-600" },
+  { label: "Balance", value: "-3 050 GNF", icon: <Euro />, accent: "bg-amber-600" },
   { label: "Prévisions", value: "+15%", icon: <TrendingUp />, accent: "bg-blue-600" },
 ];
 
@@ -138,7 +138,7 @@ const depensesData = [
 ];
 
 // Formatter pour les montants en euros
-const euroFormatter = (value: number) => `${value.toLocaleString()} €`;
+const euroFormatter = (value: number) => `${value.toLocaleString()} GNF`;
 
 export default function FinancesPage() {
   const { isAuthenticated, currentCompany } = useAuth();
@@ -206,7 +206,7 @@ export default function FinancesPage() {
                 <XAxis dataKey="mois" stroke="var(--zalama-text)" />
                 <YAxis stroke="var(--zalama-text)" tickFormatter={euroFormatter} />
                 <Tooltip 
-                  formatter={(value) => [`${value} €`, '']}
+                  formatter={(value) => [`${value} GNF`, '']}
                   contentStyle={{ 
                     backgroundColor: 'var(--zalama-card)', 
                     borderColor: 'var(--zalama-border)' 
@@ -242,7 +242,7 @@ export default function FinancesPage() {
                   ))}
                 </Pie>
                 <Tooltip 
-                  formatter={(value) => [`${value} €`, '']}
+                  formatter={(value) => [`${value} GNF`, '']}
                   contentStyle={{ 
                     backgroundColor: 'var(--zalama-card)', 
                     borderColor: 'var(--zalama-border)' 
@@ -323,7 +323,7 @@ export default function FinancesPage() {
                     <div className={`text-sm font-medium ${
                       transaction.montant > 0 ? 'text-green-500' : 'text-red-500'
                     }`}>
-                      {transaction.montant > 0 ? '+' : ''}{transaction.montant} €
+                      {transaction.montant > 0 ? '+' : ''}{transaction.montant} GNF
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
