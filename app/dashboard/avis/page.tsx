@@ -161,11 +161,11 @@ const evolutionNotesData = [
 
 // Données pour le graphique de répartition par motifs
 const repartitionMotifsData = [
-  { motif: 'Logement', valeur: 32 },
-  { motif: 'Santé/Maladie', valeur: 25 },
+  { motif: 'Loyer', valeur: 32 },
+  { motif: 'Maladie', valeur: 25 },
   { motif: 'Éducation', valeur: 18 },
   { motif: 'Urgence familiale', valeur: 15 },
-  { motif: 'Événements personnels', valeur: 10 },
+  { motif: 'Alimentation', valeur: 10 },
   { motif: 'Autres', valeur: 5 },
 ];
 
@@ -372,6 +372,22 @@ export default function AvisPage() {
                     borderColor: 'var(--zalama-border)' 
                   }}
                   labelStyle={{ color: 'var(--zalama-text)' }}
+                />
+                <Legend 
+                  layout="horizontal"
+                  verticalAlign="bottom"
+                  align="center"
+                  wrapperStyle={{
+                    paddingTop: '20px',
+                    fontSize: '12px',
+                    fontWeight: 'medium',
+                    color: 'var(--zalama-text)'
+                  }}
+                  formatter={(value) => (
+                    <span style={{ color: 'var(--zalama-text)', marginRight: '12px' }}>
+                      {value}
+                    </span>
+                  )}
                 />
               </PieChart>
             </ResponsiveContainer>
